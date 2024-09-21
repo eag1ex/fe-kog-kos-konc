@@ -1,0 +1,191 @@
+.chat {
+    @include margin-res-bottom;
+    border-radius: $border-radius;
+    overflow: hidden;
+    position: relative;
+    /*display: block;
+  padding-bottom: 110px;*/
+    display: flex;
+    flex-direction: column;
+
+    .chat-screen {
+        /*height: 100%;
+    min-height: calc(100vh - 515px);
+    min-height: calc(100vh - 500px);
+    max-height: calc(100vh - 300px);*/
+        background: $gray-100;
+        position: relative;
+        @include padding-res;
+        padding-bottom: 0;
+        overflow-y: auto;
+
+        .chat-messages {
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-flow: column;
+        }
+
+        p {
+            margin-bottom: 0;
+            border-radius: $border-radius;
+            padding: 10px 20px;
+            margin-bottom: 5px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        span {
+            font-size: $small-font-size;
+            width: 100%;
+            display: block;
+        }
+
+        .sender-message,
+        .receiver-message {
+            max-width: 600px;
+            width: 100%;
+            display: block;
+            margin-bottom: 15px;
+
+            img {
+                display: block;
+                margin-bottom: 15px;
+                max-width: 100%;
+
+                &:hover {
+                    cursor: pointer;
+                    filter: contrast(105%);
+                }
+            }
+
+            span {
+                display: block;
+                margin: 10px 0 15px;
+
+                img {
+                    max-width: 100%;
+                }
+            }
+        }
+
+        .sender-message {
+            margin-left: auto;
+
+            p {
+                background: $primary;
+                color: $white;
+                text-align: left;
+            }
+
+            span {
+                text-align: right;
+            }
+        }
+
+        .receiver-message {
+            padding-right: 60px;
+
+            p {
+                background: $black;
+                color: $white;
+            }
+        }
+    }
+
+    .chat-area {
+        background: $gray-300;
+        padding: 20px;
+        display: flex;
+        /*position: absolute;
+    bottom: 0;*/
+        width: 100%;
+
+        .chat-box {
+            width: 100%;
+            background: $white;
+            overflow: hidden;
+            border-radius: $border-radius;
+            padding: 0 10px;
+
+            .form-control {
+                height: 70px;
+                border-color: $white;
+                width: 100%;
+                padding: 10px 0;
+            }
+
+            .img-box {
+                padding: 10px 0;
+                border-bottom: 1px solid $border-color;
+                display: flex;
+
+                .btn {
+                    margin: 0 0 0 5px;
+                    width: 25px;
+                    height: 25px;
+                    padding: 0;
+                    min-width: unset;
+                    font-size: 16px;
+                    background: $gray-400;
+                    color: $white;
+                    opacity: 0.8;
+
+                    &:hover {
+                        background: $danger;
+                    }
+                }
+
+                img {
+                    max-height: 100px;
+                }
+            }
+        }
+
+        .custom-file {
+            height: 50px;
+            margin: auto 20px 10px 0;
+            width: 50px;
+        }
+
+        .custom-file-input {
+            display: none;
+        }
+
+        .btn {
+            height: 50px;
+            min-width: 50px;
+            padding: 0;
+            margin: auto 0 10px 20px;
+            font-size: 25px;
+            border-radius: 30px;
+
+            &.btn-send-photo {
+                background-color: $white;
+                border: none;
+                display: flex;
+                margin: 0;
+                cursor: pointer;
+
+                i {
+                    margin: auto;
+                    color: $primary;
+                }
+
+                &:after {
+                    display: none;
+                }
+
+                &:hover {
+                    i {
+                        color: darken($primary, 10%);
+                    }
+                }
+            }
+        }
+    }
+}
+.chat-wrapper {
+    height: calc(100vh - 245px);
+    min-height: 510px;
+}

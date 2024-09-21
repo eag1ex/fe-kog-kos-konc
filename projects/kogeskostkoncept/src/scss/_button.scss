@@ -1,0 +1,25 @@
+@each $color, $value in $theme-colors {
+    .btn-#{$color} {
+        @include button-variant($value);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .btn-outline-#{$color} {
+        @include button-outline-variant($value);
+    }
+}
+
+.btn-outline-secondary {
+    color: $body-color;
+}
+
+table {
+    .button-area {
+        @each $color, $value in $theme-colors {
+            .btn-outline-#{$color} {
+                @include button-table-variant($value);
+            }
+        }
+    }
+}

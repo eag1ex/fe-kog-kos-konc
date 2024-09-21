@@ -1,0 +1,496 @@
+<div class="app-body online-booking" *ngIf="isDataAvailable">
+    <main class="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="logo">
+                        <img src="assets/img/brand/logo.png" alt="koges kost koncept" />
+                    </div>
+                    <div class="intro-section">
+                        <h1 [translate]="'ONLINE_BOOKING.TITLE'"></h1>
+                        <p [translate]="'ONLINE_BOOKING.DESCRIPTION'"></p>
+                    </div>
+                    <div class="green-accordion">
+                        <div class="card-collasps">
+                            <div class="card-collasps-header">
+                                <button
+                                    type="button"
+                                    class="btn btn-collasps"
+                                    (click)="onSectionChange('service')"
+                                    [class.active]="isServiceActivate"
+                                    [attr.aria-expanded]="isServiceCollapsed"
+                                    aria-controls="collapseBasic"
+                                    [disabled]="isServiceDisabled"
+                                >
+                                    <span>1</span>
+                                    <span [translate]="'ONLINE_BOOKING.SERVICE_SECTION'"></span>
+                                    <span><i class="{{ onArrowServiceChange() }}"></i></span>
+                                </button>
+                            </div>
+                            <div
+                                id="collapseBasic1"
+                                [collapse]="!isServiceCollapsed"
+                                [isAnimated]="true"
+                                class="card-body"
+                            >
+                                <div *ngIf="hasServices">
+                                    <div class="service-select-item" *ngFor="let service of serviceList; let i = index">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-radio">
+                                                <input
+                                                    type="radio"
+                                                    id="{{ service.id }}"
+                                                    name="serviceChoice"
+                                                    class="custom-control-input"
+                                                    value="{{ service.itemName }}"
+                                                    (ngModelChange)="
+                            onServiceRadioChange($event, service.id, i)
+                          "
+                                                    [(ngModel)]="serviceBooking"
+                                                />
+                                                <label class="custom-control-label" for="{{ service.id }}"
+                                                    >{{ service.itemName }}</label
+                                                >
+                                            </div>
+                                        </div>
+                                        <p [hidden]="!(indexService == i)">{{ service.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-item-selected" [collapse]="isServiceCollapsed">{{ serviceBooking }}</div>
+                        </div>
+                        <div class="card-collasps">
+                            <div class="card-collasps-header">
+                                <button
+                                    type="button"
+                                    class="btn btn-collasps"
+                                    (click)="onSectionChange('coach')"
+                                    [class.active]="isCoachActivate"
+                                    [attr.aria-expanded]="!isCoachCollapsed"
+                                    aria-controls="collapseBasic"
+                                    [disabled]="isCoachDisabled"
+                                >
+                                    <span>2</span>
+                                    <span [translate]="'ONLINE_BOOKING.SELECT_COACH'"></span>
+                                    <span><i class="fal fa-angle-down"></i></span>
+                                </button>
+                            </div>
+                            <div
+                                id="collapseBasic2"
+                                [collapse]="!isCoachCollapsed"
+                                [isAnimated]="true"
+                                class="card-body"
+                            >
+                                <div *ngIf="hasCoaches">
+                                    <div class="select-coach-wrapper">
+                                        <div class="select-coach-button">
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-primary"
+                                                (click)="onClickChange(true, false)"
+                                                [class.selected]="isAnyAvailableCoach"
+                                            >
+                                                <span [translate]="'ONLINE_BOOKING.ANY_AVAILABLE_COACH'"></span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-primary"
+                                                (click)="onClickChange(false, true)"
+                                                [class.selected]="isShowCoach"
+                                                [attr.aria-expanded]="!isShowCoach"
+                                            >
+                                                <span [translate]="'ONLINE_BOOKING.SELECT_SPECIFIC_COACH'"></span>
+                                            </button>
+                                        </div>
+                                        <div [collapse]="!isShowCoach" [isAnimated]="true">
+                                            <div
+                                                class="coach-cards big-coach-cards"
+                                                *ngFor="let coach of coachActiveList; let i = index"
+                                            >
+                                                <div
+                                                    class="coach-card"
+                                                    [ngClass]="
+                            coach.uid == this.selectedCoach ? 'selected' : ''
+                          "
+                                                    (click)="onSectionCoachChange(coach.uid, coach.name)"
+                                                >
+                                                    <div class="coach-image">
+                                                        <div class="coach-image-wrapper">
+                                                            <img
+                                                                src="{{ coach.picture?.url }}"
+                                                                alt="picture"
+                                                                (error)="setNoImage($event)"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div class="coach-detail">
+                                                        <h4 class="coach-name">{{ coach.name }}</h4>
+                                                        <p>{{ coach.description }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-item-selected" [collapse]="isCoachCollapsed">
+                                <span *ngIf="!isAnyAvailableCoach" [translate]="'ONLINE_BOOKING.SELECT_SPECIFIC_COACH'"
+                                    >{{ selectedCoachName }}</span
+                                >
+                                <span
+                                    *ngIf="isAnyAvailableCoach"
+                                    [translate]="'ONLINE_BOOKING.ANY_AVAILABLE_COACH'"
+                                ></span>
+                            </div>
+                        </div>
+
+                        <div class="card-collasps">
+                            <div class="card-collasps-header">
+                                <button
+                                    type="button"
+                                    class="btn btn-collasps"
+                                    (click)="onSectionChange('dateTime')"
+                                    [class.active]="isDateTimeActivate"
+                                    [attr.aria-expanded]="isDateTimeCollapsed"
+                                    aria-controls="collapseBasic"
+                                    [disabled]="isDateTimeDisabled"
+                                >
+                                    <span>3</span>
+                                    <span [translate]="'ONLINE_BOOKING.DATE_TIME_SECTION'"></span>
+                                    <span><i class="{{ onArrowDateTimeChange() }}"></i></span>
+                                </button>
+                            </div>
+                            <div
+                                id="collapseBasic2"
+                                [collapse]="!isDateTimeCollapsed"
+                                [isAnimated]="true"
+                                class="card-body"
+                            >
+                                <div class="date-time-select">
+                                    <div class="date-select">
+                                        <bs-datepicker-inline
+                                            #datepicker
+                                            [minDate]="minDate"
+                                            [maxDate]="maxDate"
+                                            [datesDisabled]="disabledDates"
+                                            [bsValue]="dateSelected"
+                                            (bsValueChange)="onValueChange($event)"
+                                            [bsConfig]="{
+                        selectFromOtherMonth: true,
+                        customTodayClass: styleToday
+                      }"
+                                            [dateCustomClasses]="selectedClass"
+                                        >
+                                        </bs-datepicker-inline>
+                                    </div>
+                                    <div class="time-select" *ngIf="isHaveTime()">
+                                        <div class="time-table">
+                                            <div class="time-table-title">
+                                                <i class="fal fa-clock"></i>{{ "ONLINE_BOOKING.BOOKING_AVALIABLE_TIME" |
+                                                translate }} - {{ selectedDateShow }}
+                                            </div>
+                                            <div class="time-table-head">
+                                                <div class="column" [translate]="'ONLINE_BOOKING.MORNING'"></div>
+                                                <div class="column" [translate]="'ONLINE_BOOKING.AFTERNOON'"></div>
+                                                <div class="column" [translate]="'ONLINE_BOOKING.EVENING'"></div>
+                                            </div>
+                                            <div class="time-table-body">
+                                                <div class="column">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary"
+                                                        [attr.data-selected]="false"
+                                                        [class.selected]="selectedMorning[i]"
+                                                        (click)="
+                              selectedTime(time.time_title, i, 'morning')
+                            "
+                                                        id="{{ time.time_id }}"
+                                                        *ngFor="let time of morningList; let i = index"
+                                                    >
+                                                        {{ time.time_title }}
+                                                    </button>
+                                                </div>
+                                                <div class="column">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary"
+                                                        [attr.data-selected]="false"
+                                                        [class.selected]="selectedAfternoon[i]"
+                                                        (click)="
+                              selectedTime(time.time_title, i, 'afternoon')
+                            "
+                                                        id="{{ time.time_id }}"
+                                                        *ngFor="let time of afternoonList; let i = index"
+                                                    >
+                                                        {{ time.time_title }}
+                                                    </button>
+                                                </div>
+                                                <div class="column">
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-outline-primary"
+                                                        [attr.data-selected]="false"
+                                                        [class.selected]="selectedEvening[i]"
+                                                        (click)="
+                              selectedTime(time.time_title, i, 'evening')
+                            "
+                                                        id="{{ time.time_id }}"
+                                                        *ngFor="let time of eveningList; let i = index"
+                                                    >
+                                                        {{ time.time_title }}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-item-selected" [collapse]="isDateTimeCollapsed">
+                                <div *ngIf="!isFirstLoad">{{ selectedDateShow }} {{ selectedAvailableTime }}</div>
+                            </div>
+                        </div>
+                        <div class="card-collasps">
+                            <div class="card-collasps-header">
+                                <button
+                                    type="button"
+                                    class="btn btn-collasps"
+                                    (click)="onSectionChange('information')"
+                                    [class.active]="isInformationActivate"
+                                    [attr.aria-expanded]="isInformationCollapsed"
+                                    aria-controls="collapseBasic"
+                                    [disabled]="isInformationDisabled"
+                                >
+                                    <span>4</span>
+                                    <span [translate]="'ONLINE_BOOKING.INFORMATION_SECTION'"></span>
+                                    <span><i class="{{ onArrowInformationChange() }}"></i></span>
+                                </button>
+                            </div>
+                            <div
+                                id="collapseBasic4"
+                                [collapse]="!isInformationCollapsed"
+                                [isAnimated]="true"
+                                class="card-body"
+                            >
+                                <div class="info-form">
+                                    <form [formGroup]="informationForm" (ngSubmit)="onSubmit()">
+                                        <div class="form-group">
+                                            <label
+                                                [translate]="
+                          'ONLINE_BOOKING.INFORMATION_DETAIL.FULL_NAME'
+                        "
+                                            ></label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                formControlName="name"
+                                                [(ngModel)]="member_name"
+                                                [ngClass]="{
+                          'is-invalid':
+                            f.name.touched &&
+                            (f.name.errors || f.name.errors?.required)
+                        }"
+                                                (ngModelChange)="onNameModelChange($event)"
+                                            />
+                                            <div *ngIf="f.name.touched" class="invalid-feedback">
+                                                <app-control-messages [control]="informationForm.get('name')">
+                                                </app-control-messages>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label
+                                                [translate]="
+                          'ONLINE_BOOKING.INFORMATION_DETAIL.CONTACT_INFORMATION'
+                        "
+                                            ></label>
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                formControlName="phone_number"
+                                                [(ngModel)]="member_phone"
+                                                [ngClass]="{
+                          'is-invalid':
+                            f.phone_number.touched &&
+                            (f.phone_number.errors ||
+                              f.phone_number.errors?.required)
+                        }"
+                                                (ngModelChange)="onPhoneModelChange($event)"
+                                            />
+                                            <div *ngIf="f.phone_number.touched" class="invalid-feedback">
+                                                <app-control-messages [control]="informationForm.get('phone_number')">
+                                                </app-control-messages>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>{{ "ONLINE_BOOKING.INFORMATION_DETAIL.SEX" | translate }}</label>
+                                            <div class="form-filter short">
+                                                <angular2-multiselect
+                                                    [data]="dropdownMemberSexList"
+                                                    id="member_sex"
+                                                    name="member_sex"
+                                                    formControlName="member_sex"
+                                                    [ngClass]="{
+            'is-invalid':
+              (f.member_sex?.touched &&
+                (f.member_sex?.errors || f.member_sex.errors?.required)) ||
+              (f.member_sex?.touched && !selectedMemberSex)
+          }"
+                                                    [settings]="dropdownMemberSexSettings"
+                                                    (onClose)="modelChanged()"
+                                                    [(ngModel)]="selectedMemberSex"
+                                                >
+                                                </angular2-multiselect>
+                                                <div *ngIf="f.member_sex?.touched" class="invalid-feedback">
+                                                    <app-control-messages [control]="informationForm.get('member_sex')">
+                                                    </app-control-messages>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    class="custom-control-input"
+                                                    (change)="onAcceptTerm($event.target.checked)"
+                                                    id="termAndCondition"
+                                                    [checked]="isAccept"
+                                                />
+                                                <label
+                                                    class="custom-control-label"
+                                                    for="termAndCondition"
+                                                    [translate]="'ONLINE_BOOKING.TERM_CONDITON_TEXT'"
+                                                >
+                                                </label>
+                                                &nbsp;
+                                                <a
+                                                    href="https://kostkoncept.dk/medlemsbetingelser/"
+                                                    target="_blank"
+                                                    [translate]="'ONLINE_BOOKING.READ_MORE_LINK'"
+                                                ></a>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <ngx-recaptcha2
+                                                #captchaElem
+                                                [ngClass]="{
+                          'is-invalid':
+                            f.recaptcha.touched &&
+                            (f.recaptcha.errors || f.recaptcha.errors?.required)
+                        }"
+                                                class="g-recaptcha"
+                                                data-sitekey="6LdCyEEjAAAAAJzr29o8tMwlpiC9DsefzKvY3xci"
+                                                [siteKey]="siteKey"
+                                                (reset)="handleReset()"
+                                                (expire)="handleExpire()"
+                                                (load)="handleLoad()"
+                                                (success)="handleSuccess($event)"
+                                                [useGlobalDomain]="false"
+                                                [size]="size"
+                                                [hl]="lang"
+                                                [theme]="theme"
+                                                [type]="type"
+                                                formControlName="recaptcha"
+                                            >
+                                            </ngx-recaptcha2>
+                                        </div>
+                                        <div class="form-submit">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-danger"
+                                                [translate]="'ONLINE_BOOKING.BOOKING_BUTTON'"
+                                                [disabled]="
+                          (this.selectedDate == undefined &&
+                            this.selectedAvailableTime == undefined) ||
+                          !(this.isCheckRecaptcha && this.isAccept)
+                        "
+                                            ></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="card-item-selected" *ngIf="!isInformationCollapsed">
+                                {{ memberName }} {{ memberPhone }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- online booking success -->
+<div class="app-body online-booking online-booking-success" *ngIf="isBookingSuccess">
+    <main class="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="logo">
+                        <img src="assets/img/brand/logo.png" alt="koges kost koncept" />
+                    </div>
+                    <div class="intro-section">
+                        <h1 [translate]="'ONLINE_BOOKING.BOOKING_SUCCESS_TITLE'"></h1>
+                        <div class="icon-section">
+                            <img src="assets/img/icon-success.png" alt="" />
+                        </div>
+                        <p [translate]="'ONLINE_BOOKING.BOOKING_SUCCESS_DESCRIPTION'"></p>
+                    </div>
+                    <div class="online-booking-detail">
+                        <h6 [translate]="'ONLINE_BOOKING.BOOKING_SUCCESS_DETAIL'"></h6>
+                        <p class="online-booking-detail-name">{{ onlineBookingDetail.full_name }}</p>
+                        <p class="online-booking-detail-tel">
+                            <i class="fas fa-phone-alt"></i>{{ onlineBookingDetail.phone_number }}
+                        </p>
+                        <p class="online-booking-detail-service">{{ onlineBookingDetail.service.name }}</p>
+                        <p class="online-booking-detail-date">
+                            <i class="fal fa-calendar-alt"></i>{{ dateTimeBooking }}
+                        </p>
+                        <div class="online-booking-detail-action">
+                            <button
+                                type="button"
+                                class="btn btn-outline-dark"
+                                [translate]="'ONLINE_BOOKING.BOOKING_SUCCESS_MESSAGE'"
+                                (click)="resendMessage()"
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- online booking error -->
+<div class="app-body online-booking online-booking-error" *ngIf="isBookingError">
+    <main class="main">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="logo">
+                        <img src="assets/img/brand/logo.png" alt="koges kost koncept" />
+                    </div>
+                    <div class="intro-section">
+                        <h1 [translate]="'ONLINE_BOOKING.BOOKING_ERROR_TITLE'"></h1>
+                        <div class="icon-section">
+                            <img src="assets/img/icon-error.png" alt="" />
+                        </div>
+                        <p [translate]="'ONLINE_BOOKING.BOOKING_ERROR_DESCRIPTION'"></p>
+                        <div class="button-action">
+                            <button
+                                type="button"
+                                class="btn btn-outline-dark"
+                                [translate]="'ONLINE_BOOKING.BOOKING_ERROR_START_OVER_BUTTON'"
+                                (click)="clearBookingForm()"
+                            ></button>
+                            <button
+                                type="button"
+                                class="btn btn-primary"
+                                [translate]="'ONLINE_BOOKING.BOOKING_ERROR_TRY_AGAIN_BUTTON'"
+                                (click)="createOnlineBooking()"
+                            ></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

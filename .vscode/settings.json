@@ -1,0 +1,143 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true
+    },
+    // will auto sync tags, source: https://stackoverflow.com/questions/5195859/how-do-you-push-a-tag-to-a-remote-repository-using-git
+    "git.followTagsWhenSync": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": false
+    },
+    "editor.wordWrap": "on",
+    "node-module-intellisense.scanBuiltinModules": true,
+    "node-module-intellisense.scanDevDependencies": true,
+    "node-module-intellisense.scanFileModules": true,
+    "editor.bracketPairColorization.enabled": true,
+    "angular-template-formatter.indentWidth": 2,
+    "angular-template-formatter.closeTagSameLine": true,
+    "angular-template-formatter.useSpaces": true,
+    "eslint.options": { "configFile": ".eslintrc.js" },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 4
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.fixAll.stylelint": "explicit"
+    },
+    "commentAnchors.parseDelay": 200,
+    "commentAnchors.workspace.enabled": true,
+    "commentAnchors.workspace.lazyLoad": true,
+    "commentAnchors.workspace.matchFiles": "**/*",
+    "commentAnchors.workspace.excludeFiles": "**/{node_modules,.git,.idea,target,out,build,vendor,out,.next,_delete,_archive,dist}/**/*",
+    "commentAnchors.tags.provideAutoCompletion": true,
+    "commentAnchors.tags.separators": [" ", ": ", " - "],
+    "commentAnchors.tags.list": [
+        {
+            "tag": "ATTENTION",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#BA68C8",
+            "styleComment": true
+        },
+        {
+            "tag": "BUG",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#F44336",
+            "styleComment": true
+        },
+        {
+            "tag": "WARN",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#F44336",
+            "styleComment": true
+        },
+        {
+            "tag": "PATCH",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#64DD17",
+            "styleComment": true
+        },
+        {
+            "tag": "SUGGESTION",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#64DD17",
+            "styleComment": true
+        },
+        {
+            "tag": "REVIEW",
+            "scope": "file",
+            "iconColor": "default",
+            "highlightColor": "#ffa100",
+            "styleComment": true
+        }
+    ],
+    "better-comments.tags": [
+        {
+            "tag": "!",
+            "color": "#FF2D00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "?",
+            "color": "#3498DB",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "//",
+            "color": "#474747",
+            "strikethrough": true,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "todo",
+            "color": "#FF8C00",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        },
+        {
+            "tag": "*",
+            "color": "#98C379",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": false,
+            "italic": false
+        }
+    ],
+    "angular.enable-strict-mode-prompt": false
+}

@@ -1,0 +1,13 @@
+.ng5-slider {
+    margin-bottom: 35px !important;
+
+    .ng5-slider-pointer {
+        background-color: $primary !important;
+
+        &.ng5-slider-active {
+            &:after {
+                background-color: $primary !important;
+            }
+        }
+    }
+}

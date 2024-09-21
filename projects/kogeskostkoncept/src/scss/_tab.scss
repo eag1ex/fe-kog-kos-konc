@@ -1,0 +1,46 @@
+.tab-container {
+    padding: 0;
+
+    .nav-tabs {
+        background: $white;
+        box-shadow: $box-shadow;
+        margin-bottom: 2px;
+        max-width: 100%;
+        position: relative;
+
+        .nav-link {
+            padding: 12px 0;
+            margin: 0 $spacer;
+            border: 0;
+
+            &.active {
+                border: 0;
+                border-bottom: 2px solid $primary;
+                color: $primary;
+
+                &:hover {
+                    border-bottom: 2px solid $primary;
+                }
+            }
+
+            &:hover {
+                border: 0;
+                color: $primary;
+            }
+        }
+    }
+
+    .tab-content {
+        border: 0;
+
+        .tab-pane {
+            padding: 0;
+        }
+    }
+}
+
+@include media-breakpoint-down($breakpoint-mobile-down) {
+    .tab-container {
+        padding: 0;
+    }
+}

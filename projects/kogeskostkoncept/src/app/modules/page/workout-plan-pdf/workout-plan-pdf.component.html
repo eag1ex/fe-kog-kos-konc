@@ -1,0 +1,124 @@
+<div class="pdf" id="contentToConvert">
+    <table>
+        <thead>
+            <tr>
+                <td>
+                    <div class="header">
+                        <img src="assets/img/brand/logo.png" />
+                        <div class="title">
+                            <h2>{{ "PDF.WORKOUT_PLAN.TITLE" | translate }}</h2>
+                            <h5>{{ workoutPlanData?.workouPlanForm?.name }}</h5>
+                            <p>{{ workoutPlanData?.workouPlanForm?.purpose }}</p>
+                        </div>
+                        <div class="contact">
+                            <span class="name">{{ workoutPlanData?.full_name }}</span>
+                            <span class="phone"
+                                >{{ "PDF.PHONE_NUMBER" | translate }} {{ workoutPlanData?.phone_number }}</span
+                            >
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="body-fixed">
+                        <div class="info">
+                            <p class="date">
+                                {{ "PDF.WORKOUT_PLAN.RENEWAL_DATE" | translate }} {{
+                                workoutPlanData?.workouPlanForm?.renewal_date !== null ?
+                                (workoutPlanData?.workouPlanForm?.renewal_date | date : dateFormat) : "" }}
+                            </p>
+                            <h5>{{ "PDF.WORKOUT_PLAN.INFORMATION_TITLE" | translate }}</h5>
+                            <div class="description" [innerHTML]="workoutPlanData?.workouPlanForm?.information"></div>
+                        </div>
+                        <div class="workout">
+                            <div class="workout-warp" *ngFor="let workoutPlanDay of workoutPlanData?.workouPlanDetail">
+                                <h3>{{ workoutPlanDay?.name }}</h3>
+                                <div *ngFor="let workoutPlanSet of workoutPlanDay?.WorkoutPlanSet">
+                                    <div
+                                        [ngClass]="{
+                      'exercise-set': workoutPlanSet.isSuperSet
+                    }"
+                                    >
+                                        <div
+                                            class="exercise"
+                                            *ngFor="
+                        let workoutPlanExercise of workoutPlanSet?.workoutPlanExercise
+                      "
+                                        >
+                                            <div class="exercise-img">
+                                                <img
+                                                    src="{{ workoutPlanExercise?.imageUrl }}"
+                                                    (error)="setNoImage($event)"
+                                                    (load)="imageLoaded()"
+                                                />
+                                            </div>
+                                            <div class="exercise-details">
+                                                <p class="exercise-name">{{ workoutPlanExercise?.name }}</p>
+                                                <p class="exercise-category">
+                                                    {{ "PDF.WORKOUT_PLAN.CATEGORY" | translate }} {{
+                                                    workoutPlanExercise?.category }}
+                                                </p>
+                                                <div
+                                                    class="exercise-plan"
+                                                    *ngFor="
+                            let exerciseField of workoutPlanExercise?.exercise_fields
+                          "
+                                                >
+                                                    <span *ngIf="exerciseField?.field1?.type === 'Empty'"
+                                                        ><b>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        </b></span
+                                                    >
+                                                    <span *ngIf="exerciseField?.field1?.type !== 'Empty'"
+                                                        ><b>{{ getTypeText(exerciseField?.field1?.type) }}</b>
+                                                        {{ getWorkoutFieldValue( exerciseField?.field1.type,
+                                                        exerciseField?.field1.value ) }}
+                                                    </span>
+                                                    <span *ngIf="exerciseField?.field2?.type === 'Empty'"
+                                                        ><b>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        </b></span
+                                                    >
+                                                    <span *ngIf="exerciseField?.field2?.type !== 'Empty'"
+                                                        ><b>{{ getTypeText(exerciseField?.field2?.type) }}</b>
+                                                        {{ getWorkoutFieldValue( exerciseField?.field2.type,
+                                                        exerciseField?.field2.value ) }}
+                                                    </span>
+                                                    <span *ngIf="exerciseField?.field3?.type === 'Empty'"
+                                                        ><b>
+                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                        </b></span
+                                                    >
+                                                    <span *ngIf="exerciseField?.field3?.type !== 'Empty'"
+                                                        ><b>{{ getTypeText(exerciseField?.field3?.type) }}</b>
+                                                        {{ getWorkoutFieldValue( exerciseField?.field3.type,
+                                                        exerciseField?.field3.value ) }}
+                                                    </span>
+                                                </div>
+                                                <p class="exercise-description">
+                                                    <b>{{ "WORK_OUT_EXERCISE.BREAK" | translate }}: </b>
+                                                    {{ workoutPlanExercise?.break }}
+                                                </p>
+                                                <p class="exercise-description">
+                                                    <b>{{ "WORK_OUT_EXERCISE.SETTING" | translate }}: </b>
+                                                    {{ workoutPlanExercise?.setting }}
+                                                </p>
+                                                <p class="exercise-description">
+                                                    <b>{{ "WORK_OUT_EXERCISE.NOTE" | translate }}: </b>
+                                                    {{ workoutPlanExercise?.note }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

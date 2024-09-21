@@ -1,0 +1,68 @@
+<div class="card">
+    <div class="form-option">
+        <div class="button-area">
+            <button class="btn btn-primary" [routerLink]="['/booking', 'coaches']">
+                <i class="fad fa-plus"></i>{{ "BOOKING.COACH.NEW" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="sorting" [class.asc]="isAscSorted" [class.desc]="!isAscSorted" (click)="isSorting('name')">
+                    {{ "MEMBER.NAME" | translate }}
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let coach of coachesList">
+                <td data-th="name">{{ coach.name }}</td>
+                <td class="button-area">
+                    <button class="btn btn-outline-primary" [routerLink]="['/booking/coaches/', coach.uid, 'detail']">
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="dangerModal.show(); setCoachId(coach.uid)">
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!--Delete modal-->
+<div
+    bsModal
+    #dangerModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'BOOKING.COACH.DELETE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerModal.hide(); validateAndDeleteCoach()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,82 @@
+<h3 class="header">{{ "CATEGORY.HEADER_LIST" | translate }}</h3>
+<div class="card">
+    <div class="form-option">
+        <div *ngIf="currentUser?.isAdmin" class="button-area">
+            <button class="btn btn-primary" [routerLink]="['/traeningstyper', 'create']">
+                <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="sorting" [class.asc]="isAscSorted" [class.desc]="!isAscSorted" (click)="isSorting('name')">
+                    {{ "CATEGORY.NAME_LIST" | translate }}
+                </th>
+                <th>{{ "CATEGORY.FARVE_LIST" | translate }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let cat of categoryList">
+                <td data-th="Navn">{{ cat.name }}</td>
+                <td data-th="Farvegruppe">{{ getCategoryColor(cat.color) }}</td>
+                <td class="button-area">
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-primary"
+                        [routerLink]="['/traeningstyper', cat.uid, 'detail']"
+                    >
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-danger"
+                        (click)="dangerModal.show(); setCategoryId(cat.uid)"
+                    >
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'CATEGORY.EMPTY_LIST'"></span>
+    </div>
+</div>
+
+<!--Delete modal-->
+<div
+    bsModal
+    #dangerModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerModal.hide(); deleteCategory()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

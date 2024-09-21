@@ -1,0 +1,41 @@
+.tooltip-dropdown-image {
+    width: 400px;
+    padding: 0;
+    z-index: 100000;
+
+    &.show {
+        opacity: 1;
+    }
+
+    .tooltip-inner {
+        background-color: #0000;
+        position: relative;
+        left: calc(-100% - 10px);
+        top: -50%;
+        transform: translateY(-50%);
+        max-width: 400px;
+        padding: 0;
+
+        img {
+            width: 100%;
+            box-shadow: 0px 0px 2px 3px rgba($black, 0.1);
+        }
+    }
+
+    .tooltip-arrow {
+        display: none;
+    }
+}
+
+@include media-breakpoint-down($breakpoint-mobile-down) {
+    .tooltip-dropdown-image {
+        width: 300px;
+
+        .tooltip-inner {
+            left: 0;
+            transform: none;
+            top: calc(100% + 10px);
+            max-width: 300px;
+        }
+    }
+}

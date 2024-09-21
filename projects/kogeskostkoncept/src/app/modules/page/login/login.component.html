@@ -1,0 +1,247 @@
+<div class="app-body" *ngIf="isLogin">
+    <main class="main d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 login">
+                    <div class="card-group">
+                        <div class="card">
+                            <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+                                <img class="logo" src="assets/img/brand/logo.png" />
+                                <p [translate]="'LOGIN.DESCRIPTION'"></p>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-user"></i></span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        [ngClass]="{
+                      'is-invalid':
+                        f.username.touched &&
+                        (f.username.errors ||
+                          f.username.errors?.required ||
+                          response?.status == 'user fail')
+                    }"
+                                        formControlName="username"
+                                        placeholder="{{ 'LOGIN.USERNAME_PLACEHOLDER' | translate }}"
+                                        autocomplete="username"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="f.username.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="loginForm.get('username')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'user fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-lock"></i></span>
+                                    </div>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        [ngClass]="{
+                      'is-invalid':
+                        f.password.touched &&
+                        (f.password.errors ||
+                          f.password.errors?.required ||
+                          response?.status == 'password fail')
+                    }"
+                                        formControlName="password"
+                                        placeholder="{{ 'LOGIN.PASSWORD_PLACEHOLDER' | translate }}"
+                                        autocomplete="current-password"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="f.password.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="loginForm.get('password')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'password fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="input-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    class="custom-control-input"
+                                                    id="isRememberme"
+                                                    name="isRememberme"
+                                                    [(ngModel)]="isRememberme"
+                                                    formControlName="isRememberme"
+                                                />
+                                                <label
+                                                    class="custom-control-label"
+                                                    for="isRememberme"
+                                                    [translate]="'LOGIN.REMEMBER_ME'"
+                                                ></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <a
+                                            class="forgot-password-link"
+                                            (click)="clickLinkForgotPassword()"
+                                            [translate]="'LOGIN.LINK_FORGOT_PASSWORD'"
+                                        ></a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="button-area">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-lg btn-primary btn-block"
+                                                [translate]="'LOGIN.BUTTON'"
+                                            ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- forgot password -->
+<div class="app-body" *ngIf="isForgotPassword">
+    <main class="main d-flex align-items-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 login">
+                    <div class="card-group">
+                        <div class="card">
+                            <form (ngSubmit)="onSubmit()" [formGroup]="forgotPasswordForm">
+                                <img class="logo" src="assets/img/brand/logo.png" />
+                                <div class="intro-section">
+                                    <h1 [translate]="'LOGIN.FORGOT_PASSWORD'"></h1>
+                                    <p [translate]="'LOGIN.DESCRIPTION_FORGOT_PASSWORD'"></p>
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-user"></i></span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        [readonly]="isVerifiedCode ? true : false"
+                                        [ngClass]="{
+                      'is-invalid':
+                        fg.username.touched &&
+                        (fg.username.errors ||
+                          fg.username.errors?.required ||
+                          response?.status == 'user fail')
+                    }"
+                                        formControlName="username"
+                                        placeholder="{{ 'LOGIN.USERNAME_PLACEHOLDER' | translate }}"
+                                        autocomplete="username"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="fg.username.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="forgotPasswordForm.get('username')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'user fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="input-group" *ngIf="isVerifiedCode">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-sms"></i></span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        [readonly]="isResetPassword ? true : false"
+                                        [ngClass]="{
+                      'is-invalid':
+                        fg.code.touched &&
+                        (fg.code.errors ||
+                          fg.code.errors?.required ||
+                          response?.status == 'code fail')
+                    }"
+                                        formControlName="code"
+                                        placeholder="{{ 'LOGIN.CODE_PLACEHOLDER' | translate }}"
+                                        autocomplete="code"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="fg.code.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="forgotPasswordForm.get('code')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'code fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="input-group" *ngIf="isResetPassword">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-lock"></i></span>
+                                    </div>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        [ngClass]="{
+                      'is-invalid':
+                        fg.newPassword.touched &&
+                        (fg.newPassword.errors ||
+                          fg.newPassword.errors?.required ||
+                          response?.status == 'password fail')
+                    }"
+                                        formControlName="newPassword"
+                                        placeholder="{{
+                      'LOGIN.NEW_PASSWORD_PLACEHOLDER' | translate
+                    }}"
+                                        autocomplete="newPassword"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="fg.newPassword.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="forgotPasswordForm.get('newPassword')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'password fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="input-group" *ngIf="isResetPassword">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fad fa-lock"></i></span>
+                                    </div>
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        [ngClass]="{
+                      'is-invalid':
+                        fg.confirmPassword.touched &&
+                        (fg.confirmPassword.errors ||
+                          fg.confirmPassword.errors?.required ||
+                          response?.status == 'password fail')
+                    }"
+                                        formControlName="confirmPassword"
+                                        placeholder="{{
+                      'LOGIN.CONFIRM_PASSWORD_PLACEHOLDER' | translate
+                    }}"
+                                        autocomplete="confirmPassword"
+                                        (ngModelChange)="modelChanged()"
+                                    />
+                                    <div *ngIf="fg.confirmPassword.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="forgotPasswordForm.get('confirmPassword')">
+                                        </app-control-messages>
+                                        <div *ngIf="response?.status == 'password fail'">{{ response.message }}</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="button-area">
+                                            <button
+                                                type="submit"
+                                                class="btn btn-lg btn-primary btn-block"
+                                                [translate]="'LOGIN.CONTINUE'"
+                                            ></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

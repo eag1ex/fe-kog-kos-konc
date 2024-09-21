@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400;500;600;700&display=swap');
+// If you want to override variables do it here
+@import 'variables';
+
+// Import styles
+@import '~@coreui/coreui/scss/coreui';
+
+@import 'mixins';
+
+@import 'layout';
+@import 'navbar';
+@import 'breadcrumb';
+@import 'button';
+@import 'form';
+@import 'card';
+@import 'date-picker';
+@import 'dropdown';
+@import 'form-custom';
+@import 'sidebar';
+@import 'accordion';
+@import 'tab';
+@import 'table';
+@import 'type';
+@import 'pagination';
+@import 'modals';
+@import 'chat';
+@import 'tooltip';
+@import 'tooltip-custom';
+
+// 3rd party
+@import 'vendors/ckeditor/ckeditor';
+@import 'vendors/dropzone/dropzone';
+@import 'vendors/multiselect/multiselect';
+@import 'vendors/slider/slider';
+@import 'vendors/dragabled/dragabled';
+@import 'vendors/toast/toast';
+@import 'vendors/autocomplete/autocomplete';
+
+//pages
+@import 'pages/login';
+@import 'pages/customer';
+@import 'pages/mobile-web-view';
+@import 'pages/pdf';
+@import 'pages/coach';
+@import 'pages/calendar';
+@import 'pages/_online-booking-system.scss';
+@import 'pages/kcal-calculator';
+
+@import '~angular-calendar/css/angular-calendar.css';

@@ -1,0 +1,147 @@
+.customer {
+    .calendar {
+        .card-header {
+            .button-area {
+                .btn {
+                    width: 40px;
+                    height: 40px;
+                    padding: 0;
+
+                    i {
+                        margin-right: 0;
+                    }
+                }
+            }
+        }
+
+        .table {
+            tbody {
+                tr {
+                    td {
+                        &:first-child {
+                            white-space: nowrap;
+                        }
+                    }
+                }
+            }
+        }
+
+        .customer-calendar-plans {
+            padding-top: 10px;
+            padding-bottom: 0;
+
+            span {
+                color: $white;
+                font-size: $font-size-sm;
+                padding: 7px 10px;
+                margin: 0 10px 10px 0;
+                background-color: rgba($primary, 0.6);
+                border-radius: 3px;
+                cursor: pointer;
+                display: inline-flex;
+            }
+        }
+    }
+
+    .card-collasps {
+        padding-bottom: 1px;
+
+        .card-body {
+            .card-item {
+                padding: 10px 0 10px 10px;
+                background-color: $white;
+                border-radius: 6px;
+                margin-bottom: 15px;
+                display: flex;
+                width: 100%;
+                position: relative;
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    max-width: 105px;
+                    border-radius: 6px;
+                    overflow: hidden;
+                    margin-right: 15px;
+                }
+
+                h5 {
+                    display: block;
+                    width: auto;
+                    margin-bottom: 5px;
+                }
+
+                p {
+                    margin-bottom: 5px;
+                    padding-right: 10px;
+                }
+
+                span {
+                    margin-right: 20px;
+                    display: inline-block;
+                    margin-bottom: 5px;
+
+                    b {
+                        margin-right: 5px;
+                    }
+                }
+
+                .btn-group {
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                }
+            }
+        }
+    }
+
+    .workout-plan {
+        .dragabled {
+            &:before {
+                left: 4px;
+            }
+        }
+
+        .linked,
+        .unlink {
+            display: block;
+            padding-right: 45px;
+            position: relative;
+
+            .custom-checkbox {
+                position: absolute;
+                top: calc(50% - 12px);
+                right: -13px;
+            }
+        }
+
+        .linked {
+            &:before {
+                content: '';
+                display: block;
+                height: 100%;
+                width: 1px;
+                border-left: 1px dotted $body-color;
+                position: absolute;
+                top: 0;
+                right: 30px;
+            }
+
+            &:after {
+                content: '';
+                background-image: str-replace(
+                    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' %3E%3Cg %3E%3Cpath fill='#{$body-color}' d='M44.45 252.59l37.11-37.1c9.84-9.84 26.78-3.3 27.29 10.6a184.45 184.45 0 0 0 9.69 52.72 16.08 16.08 0 0 1-3.78 16.61l-13.09 13.09c-28 28-28.9 73.66-1.15 102a72.07 72.07 0 0 0 102.32.51L270 343.79A72 72 0 0 0 270 242a75.64 75.64 0 0 0-10.34-8.57 16 16 0 0 1-6.95-12.6A39.86 39.86 0 0 1 264.45 191l21.06-21a16.06 16.06 0 0 1 20.58-1.74A152.05 152.05 0 0 1 327 400l-.36.37-67.2 67.2c-59.27 59.27-155.7 59.26-215 0s-59.26-155.72.01-214.98z' %3E%3C/path%3E%3Cpath fill='#{$duo-tone-body}' d='M410.33 203.49c28-28 28.9-73.66 1.15-102a72.07 72.07 0 0 0-102.32-.49L242 168.21A72 72 0 0 0 242 270a75.64 75.64 0 0 0 10.34 8.57 16 16 0 0 1 6.94 12.6A39.81 39.81 0 0 1 247.55 321l-21.06 21.05a16.07 16.07 0 0 1-20.58 1.74A152.05 152.05 0 0 1 185 112l.36-.37 67.2-67.2c59.27-59.27 155.7-59.26 215 0s59.27 155.7 0 215l-37.11 37.1c-9.84 9.84-26.78 3.3-27.29-10.6a184.45 184.45 0 0 0-9.69-52.72 16.08 16.08 0 0 1 3.78-16.61z' %3E%3C/path%3E%3C/g%3E%3C/svg%3E"),
+                    '#',
+                    '%23'
+                );
+                display: block;
+                height: 17px;
+                width: 17px;
+                position: absolute;
+                top: calc(50% - 9px);
+                right: 22px;
+                background-repeat: no-repeat;
+            }
+        }
+    }
+}

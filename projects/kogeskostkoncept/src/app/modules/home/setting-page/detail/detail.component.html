@@ -1,0 +1,82 @@
+<h3 class="header">{{ "SETTING.HEADER" | translate }}</h3>
+<div class="card">
+    <form (ngSubmit)="onSubmit()" [formGroup]="settingPageForm">
+        <div class="form-group required-form">
+            <label for="exampleInput1">{{ "SETTING.GROUP_LINK" | translate }}</label>
+            <div>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="exampleInput1"
+                    formControlName="group_training_link"
+                    [ngClass]="{
+            'is-invalid':
+              settingPage.group_training_link.touched &&
+              (settingPage.group_training_link.errors ||
+                settingPage.group_training_link.errors?.required)
+          }"
+                />
+                <div *ngIf="settingPage.group_training_link.touched" class="invalid-feedback">
+                    <app-control-messages [control]="settingPageForm.get('group_training_link')">
+                    </app-control-messages>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group required-form">
+            <label for="exampleInput1">{{ "SETTING.PERSONAL_LINK" | translate }}</label>
+            <div>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="exampleInput1"
+                    formControlName="personal_booking_link"
+                    [ngClass]="{
+            'is-invalid':
+              settingPage.personal_booking_link.touched &&
+              (settingPage.personal_booking_link.errors ||
+                settingPage.personal_booking_link.errors?.required)
+          }"
+                />
+                <div *ngIf="settingPage.personal_booking_link.touched" class="invalid-feedback">
+                    <app-control-messages [control]="settingPageForm.get('personal_booking_link')">
+                    </app-control-messages>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="exampleInput3">{{ "SETTING.FUNCTION" | translate }}</label>
+            <div>
+                <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                    <input
+                        checked=""
+                        class="switch-input"
+                        type="checkbox"
+                        formControlName="is_turn_on_review_function"
+                    />
+                    <span class="switch-slider" data-checked="On" data-unchecked="Off"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleInput3">{{ "SETTING.RECIPE.HEADER" | translate }}</label>
+            <div>
+                <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                    <input checked="" class="switch-input" type="checkbox" formControlName="is_turn_on_recipe" />
+                    <span class="switch-slider" data-checked="On" data-unchecked="Off"></span>
+                </label>
+                <div style="display: block" class="invalid-feedback">
+                    {{ "SETTING.RECIPE.WARNING_TEXT" | translate }}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label></label>
+            <div class="button-area">
+                <button class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+            </div>
+        </div>
+    </form>
+</div>

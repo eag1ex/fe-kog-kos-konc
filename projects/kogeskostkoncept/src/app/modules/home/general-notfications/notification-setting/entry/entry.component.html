@@ -1,0 +1,575 @@
+<h3 class="header" *ngIf="!id">{{ "GENERAL_NOTIFICATION.NEW_NOTIFICATION" | translate }}</h3>
+<h3 class="header" *ngIf="id">{{ "GENERAL_NOTIFICATION.EDIT_NOTIFICATION" | translate }}</h3>
+<div class="card" *ngIf="isLoaded">
+    <form [formGroup]="generalDetailForm">
+        <div class="form-group required-form">
+            <label for="exampleInput1">{{ "GENERAL_NOTIFICATION.HEADING" | translate }}</label>
+            <div>
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              f.full_heading.touched &&
+              (f.full_heading.errors || f.full_heading.errors?.required)
+          }"
+                    id="full_heading"
+                    name="full_heading"
+                    formControlName="full_heading"
+                    (ngModelChange)="modelChanged()"
+                    value="{{ generalDetail?.heading }}"
+                />
+                <small class="form-text text-danger"
+                    >{{ "GENERAL_NOTIFICATION.HEADING_EDIT_WARNING" | translate }}</small
+                >
+                <div *ngIf="f.full_heading.touched" class="invalid-feedback">
+                    <app-control-messages [control]="generalDetailForm.get('full_heading')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group required-form">
+            <label for="exampleInput1">{{ "GENERAL_NOTIFICATION.PUSH_NOTIFICATION_TYPE" | translate }}</label>
+            <div>
+                <angular2-multiselect
+                    formControlName="push_notification_type"
+                    [(ngModel)]="selectedPushNotificationType"
+                    [ngClass]="{
+            'is-invalid':
+              f.push_notification_type?.touched &&
+              (f.push_notification_type.errors ||
+                f.push_notification_type.errors?.required)
+          }"
+                    [data]="pushNotificationTypeList"
+                    [settings]="dropdownPushNotificationSetting"
+                >
+                </angular2-multiselect>
+                <small class="form-text text-danger"
+                    >{{ "GENERAL_NOTIFICATION.NOTIFICATION_TYPE_EDIT_WARNING" | translate }}</small
+                >
+                <div *ngIf="f.push_notification_type?.touched" class="invalid-feedback">
+                    <app-control-messages [control]="generalDetailForm.get('push_notification_type')">
+                    </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group required-form">
+            <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.MESSAGE" | translate }}</label>
+            <div>
+                <ckeditor
+                    class="form-control"
+                    style="min-height: 250px"
+                    [ngClass]="{
+            'is-invalid':
+              f.full_message.touched &&
+              (f.full_message.errors || f.full_message.errors?.required)
+          }"
+                    formControlName="full_message"
+                    name="full_message"
+                    [editor]="Editor"
+                    data="{{ generalDetail?.message }}"
+                    rows="6"
+                    (ngModelChange)="modelChanged()"
+                    [config]="{ toolbar: ['link'] }"
+                >
+                </ckeditor>
+                <div *ngIf="f.full_message.touched" class="invalid-feedback">
+                    <app-control-messages [control]="generalDetailForm.get('full_message')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-col-form-label" for="inputError1">{{ "GENERAL_NOTIFICATION.UPLOAD" | translate }}</label>
+            <div class="col">
+                <div style="padding-bottom: 10px; max-width: 300px" *ngIf="!this.generalDetail?.picture?.url">
+                    <ngx-dropzone
+                        (change)="onImageProfileSelected($event)"
+                        [expandable]="true"
+                        [accept]="'image/png,image/jpeg,image/jpg'"
+                        [multiple]="false"
+                        [maxFileSize]="1000000"
+                    >
+                        <ngx-dropzone-label>
+                            {{ "GENERAL_NOTIFICATION.DRAG_DROP_IMAGE" | translate }}
+                        </ngx-dropzone-label>
+                        <ngx-dropzone-image-preview
+                            ngProjectAs="ngx-dropzone-preview"
+                            *ngFor="let f of pushImage"
+                            [file]="f"
+                            [removable]="true"
+                            (removed)="onRemoveProfileSelected(f)"
+                        >
+                        </ngx-dropzone-image-preview>
+                    </ngx-dropzone>
+                </div>
+                <div class="img-view" *ngIf="this.generalDetail?.picture?.url">
+                    <img class="profile-img" src="{{ this.name_image }}" alt="" />
+                    <button type="button" class="btn btn-danger" (click)="removePushImage()">
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </div>
+                <div *ngIf="imageErrorSize" class="invalid-feedback" style="display: block">
+                    <div>{{ "GENERAL_NOTIFICATION.HELP_TEXT" | translate }}</div>
+                </div>
+                <i [translate]="'CHAT.HELP_TEXT'"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.NOTIFICATION_TYPE" | translate }}</label>
+            <div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input
+                        type="radio"
+                        id="radioType1"
+                        name="notification_type"
+                        class="custom-control-input"
+                        formControlName="notification_type"
+                        value="SEND_NOW"
+                        (click)="checkRadioType('Send')"
+                        checked
+                    />
+                    <label class="custom-control-label" for="radioType1"
+                        >{{ "GENERAL_NOTIFICATION.SEND_NOW" | translate }}</label
+                    >
+                </div>
+                <div class="custom-control custom-radio custom-control-inline">
+                    <input
+                        type="radio"
+                        id="radioType2"
+                        name="notification_type"
+                        class="custom-control-input"
+                        formControlName="notification_type"
+                        value="SCHEDULE"
+                        (click)="checkRadioType('Schedule')"
+                    />
+                    <label class="custom-control-label" for="radioType2"
+                        >{{ "GENERAL_NOTIFICATION.SCHEDULE" | translate }}</label
+                    >
+                </div>
+            </div>
+        </div>
+        <ng-container *ngIf="generalDetailForm.controls.notification_type.value === 'SCHEDULE'">
+            <div class="form-group">
+                <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.REPEAT_NOTIFICATION" | translate }}</label>
+                <div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="radioNoti1"
+                            name="repeat_notification"
+                            class="custom-control-input"
+                            formControlName="repeat_notification"
+                            value="NO_REPEAT"
+                            (ngModelChange)="onRadioChange('noRepeat', $event)"
+                            checked
+                        />
+                        <label class="custom-control-label" for="radioNoti1"
+                            >{{ "GENERAL_NOTIFICATION.NO_REPEAT" | translate }}</label
+                        >
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="radioNoti2"
+                            name="repeat_notification"
+                            class="custom-control-input"
+                            formControlName="repeat_notification"
+                            value="DAILY"
+                            (ngModelChange)="onRadioChange('daily', $event)"
+                        />
+                        <label class="custom-control-label" for="radioNoti2"
+                            >{{ "GENERAL_NOTIFICATION.DAILY" | translate }}</label
+                        >
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="radioNoti3"
+                            name="repeat_notification"
+                            class="custom-control-input"
+                            formControlName="repeat_notification"
+                            value="WEEKLY"
+                            (ngModelChange)="onRadioChange('weekly', $event)"
+                        />
+                        <label class="custom-control-label" for="radioNoti3"
+                            >{{ "GENERAL_NOTIFICATION.WEEKLY" | translate }}</label
+                        >
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="radioNoti4"
+                            name="repeat_notification"
+                            class="custom-control-input"
+                            formControlName="repeat_notification"
+                            value="MONTHLY"
+                            (ngModelChange)="onRadioChange('monthly', $event)"
+                        />
+                        <label class="custom-control-label" for="radioNoti4"
+                            >{{ "GENERAL_NOTIFICATION.MONTHLY" | translate }}</label
+                        >
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input
+                            type="radio"
+                            id="radioNoti5"
+                            name="repeat_notification"
+                            class="custom-control-input"
+                            formControlName="repeat_notification"
+                            value="YEARLY"
+                            (ngModelChange)="onRadioChange('yearly', $event)"
+                        />
+                        <label class="custom-control-label" for="radioNoti5"
+                            >{{ "GENERAL_NOTIFICATION.YEARLY" | translate }}</label
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.SCHEDULE_SEND_TIME" | translate }}</label>
+                <div class="short">
+                    <div
+                        class="custom-control custom-checkbox custom-control-inline"
+                        *ngIf="
+              generalDetailForm.controls.repeat_notification.value === 'MONTHLY'
+            "
+                    >
+                        <input
+                            type="checkbox"
+                            class="custom-control-input"
+                            id="customCheck3"
+                            [ngClass]="{
+                'is-invalue':
+                  f.is_end_of_month.touched &&
+                  (f.is_end_of_month.errors ||
+                    f.is_end_of_month.errors?.required)
+              }"
+                            namae="is_end_of_month"
+                            formControlName="is_end_of_month"
+                            (click)="isCheckBox('month', $event)"
+                            [checked]="isCheckEndOfMonth"
+                            [ngModel]="isCheckEndOfMonth"
+                        />
+                        <label class="custom-control-label" for="customCheck3"
+                            >{{ "GENERAL_NOTIFICATION.END_OF_MONTH" | translate }}</label
+                        >
+                        <div *ngIf="f.is_end_of_month.touched" class="invalid-feedback">
+                            <app-control-messages [control]="generalDetailForm.get('is_end_of_month')">
+                            </app-control-messages>
+                        </div>
+                    </div>
+                    <ng-container *ngIf="generalDetailForm.controls.is_end_of_month.value">
+                        <input
+                            type="text"
+                            class="form-control date-picker"
+                            [ngClass]="{
+                'is-invalid':
+                  f.start_month.dirty &&
+                  (f.start_month.errors || f.start_month.errors?.required)
+              }"
+                            [bsConfig]="{
+                isAnimated: true,
+                dateInputFormat: monthYearFormat
+              }"
+                            [bsConfig]="bsConfig"
+                            formControlName="start_month"
+                            bsDatepicker
+                            [minDate]="dateMonthNow"
+                            [ngModel]="dateMonthValue"
+                            readonly
+                        />
+                        <div *ngIf="f.start_month.dirty" class="invalid-feedback">
+                            <app-control-messages [control]="generalDetailForm.get('start_month')">
+                            </app-control-messages>
+                        </div>
+                    </ng-container>
+                    <ng-container *ngIf="!generalDetailForm.controls.is_end_of_month.value">
+                        <input
+                            type="text"
+                            class="form-control date-picker"
+                            [ngClass]="{
+                'is-invalid':
+                  f.start_date.dirty &&
+                  (f.start_date.errors || f.start_date.errors?.required)
+              }"
+                            formControlName="start_date"
+                            bsDatepicker
+                            [dateCustomClasses]="dateCustomClasses"
+                            [ngModel]="dateValueNow"
+                            [minDate]="minDate"
+                            (onHidden)="f.start_date.markAsDirty()"
+                            [bsConfig]="{
+                isAnimated: true,
+                dateInputFormat: datePickerFormat
+              }"
+                            value="{{ generalDetail?.start_date }}"
+                            readonly
+                        />
+                        <div *ngIf="f.start_date.dirty" class="invalid-feedback">
+                            <app-control-messages [control]="generalDetailForm.get('start_date')">
+                            </app-control-messages>
+                        </div>
+                    </ng-container>
+                    <timepicker
+                        class="timePicker"
+                        [ngModel]="timeValue"
+                        formControlName="time"
+                        [hourStep]="1"
+                        [minuteStep]="15"
+                        [showMeridian]="isMeridian"
+                        (isValid)="timepickerOnValid($event)"
+                        (ngModelChange)="timepickerOnChange($event)"
+                    >
+                    </timepicker>
+                    <div *ngIf="f.time.touched" class="invalid-feedback">
+                        <app-control-messages [control]="generalDetailForm.get('time')"> </app-control-messages>
+                    </div>
+                </div>
+            </div>
+            <div
+                class="form-group"
+                *ngIf="
+          generalDetailForm.controls.repeat_notification.value !== 'NO_REPEAT'
+        "
+            >
+                <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.END_SEND_TIME" | translate }}</label>
+                <div class="short">
+                    <input
+                        type="text"
+                        class="form-control date-picker"
+                        [ngClass]="{
+              'is-invalid':
+                f.end_date.dirty &&
+                (f.end_date.errors || f.end_date.errors?.required)
+            }"
+                        formControlName="end_date"
+                        bsDatepicker
+                        [ngModel]="dateValueEnd"
+                        [dateCustomClasses]="dateCustomClasses"
+                        [minDate]="
+              generalDetailForm.controls.is_end_of_month.value
+                ? f.start_month.value || minDate
+                : f.start_date.value || minDate
+            "
+                        (onHidden)="f.end_date.markAsDirty()"
+                        [bsConfig]="{
+              isAnimated: true,
+              dateInputFormat: datePickerFormat
+            }"
+                        value="{{ generalDetail?.end_date }}"
+                        readonly
+                    />
+                    <div *ngIf="f.end_date.dirty" class="invalid-feedback">
+                        <app-control-messages [control]="generalDetailForm.get('end_date')"> </app-control-messages>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <div class="form-group">
+            <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.DRAG_DROP" | translate }}</label>
+            <div>
+                <div class="drag-n-drop">
+                    <div class="drag-n-drop-warp">
+                        <div class="drag-n-drop-area">
+                            <div class="drag-n-drop-header">
+                                <div class="form-search">
+                                    <div class="input-group">
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            formControlName="keyword"
+                                            placeholder="{{ 'LIST.SEARCH' | translate }}"
+                                            aria-label="Recipient's username"
+                                            aria-describedby="basic-addon2"
+                                            (ngModelChange)="searchMember()"
+                                        />
+                                        <div class="input-group-append">
+                                            <button class="btn" type="button" (click)="searchMember()">
+                                                <i class="fad fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                #selectAll
+                                class="drag-n-drop-header"
+                                style="cursor: pointer"
+                                (click)="selectedAll()"
+                                *ngIf="memberList.length > 0"
+                            >
+                                <span>{{ "GENERAL_NOTIFICATION.ALL_CLIENTS" | translate }}</span>
+                            </div>
+                            <perfect-scrollbar class="drag-n-drop-body" [config]="config">
+                                <div class="list-group drag-n-drop-body" dragula="ITEMS" [(dragulaModel)]="memberList">
+                                    <ng-container *ngFor="let member of memberList">
+                                        <div
+                                            class="list-group-item group-handle"
+                                            [innerHtml]="
+                        member?.full_name + ', ' + member?.phone_number
+                      "
+                                            [class.d-none]="!isInResult(member)"
+                                        ></div>
+                                    </ng-container>
+                                </div>
+                            </perfect-scrollbar>
+                        </div>
+                    </div>
+                    <div class="drag-n-drop-warp">
+                        <div
+                            class="drag-n-drop-area {{
+                !hasSelectedMember && selectedMember.length === 0
+                  ? 'is-invalid'
+                  : ''
+              }}"
+                        >
+                            <div class="drag-n-drop-header">
+                                <span>{{ "GENERAL_NOTIFICATION.RECEIVERS_LIST" | translate }}</span>
+                            </div>
+                            <div
+                                class="drag-n-drop-header"
+                                style="cursor: pointer"
+                                (click)="deleteAll()"
+                                *ngIf="selectedMember.length > 0"
+                            >
+                                <span>{{ "GENERAL_NOTIFICATION.DELETE_ALL_CLIENTS" | translate }}</span>
+                            </div>
+                            <perfect-scrollbar class="drag-n-drop-body" [config]="config">
+                                <div
+                                    class="list-group drag-n-drop-body"
+                                    dragula="ITEMS"
+                                    [(dragulaModel)]="selectedMember"
+                                >
+                                    <div
+                                        class="list-group-item group-handle"
+                                        *ngFor="let member of selectedMember"
+                                        [innerHtml]="
+                      member?.full_name + ', ' + member?.phone_number
+                    "
+                                    ></div>
+                                </div>
+                            </perfect-scrollbar>
+                        </div>
+                        <div
+                            style="display: block"
+                            class="invalid-feedback"
+                            *ngIf="!hasSelectedMember && selectedMember.length === 0"
+                        >
+                            {{ "GENERAL_NOTIFICATION.VALIDATION.DRAG_AND_DROP" | translate }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" *ngIf="isTurnOnReview && isAdmin">
+            <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.IS_APPROVE_LABEL" | translate }}</label>
+            <div>
+                <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                    <input
+                        #isTurnOn
+                        class="switch-input"
+                        type="checkbox"
+                        formControlName="is_approved"
+                        (ngModelChange)="onApproveChanged($event)"
+                    />
+                    <span
+                        class="switch-slider"
+                        attr.data-checked="{{ 'FORM.ON' | translate }}"
+                        attr.data-unchecked="{{ 'FORM.OFF' | translate }}"
+                    ></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label></label>
+            <div class="button-area">
+                <button class="btn btn-primary" (click)="onSubmit()">{{ "FORM.SAVE" | translate }}</button>
+                <button class="btn btn-outline-secondary" [routerLink]="['/push-notifications']">
+                    {{ "FORM.CANCEL" | translate }}
+                </button>
+                <button
+                    *ngIf="
+            isTurnOnReview &&
+            isAdmin &&
+            generalDetail?.status == 'AWAIT_APPROVAL'
+          "
+                    class="btn btn-danger"
+                    (click)="rejectModal.show()"
+                >
+                    {{ "GENERAL_NOTIFICATION.REJECT_BUTTON" | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--Send now confirm modal-->
+<div
+    bsModal
+    #confirmModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'NOTIFICATION.CONFRIM_DIALOG.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'NOTIFICATION.CONFRIM_DIALOG.MESSAGE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="confirmModal.hide()"
+                    [translate]="'NOTIFICATION.CONFRIM_DIALOG.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="confirmModal.hide(); saveSendNowNotification()"
+                    [translate]="'NOTIFICATION.CONFRIM_DIALOG.SEND'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject confirm modal-->
+<div
+    bsModal
+    #rejectModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'GENERAL_NOTIFICATION.REJECT_DIALOG.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'GENERAL_NOTIFICATION.REJECT_DIALOG.MESSAGE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="rejectModal.hide()"
+                    [translate]="'NOTIFICATION.CONFRIM_DIALOG.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="rejectModal.hide(); onReject()"
+                    [translate]="'GENERAL_NOTIFICATION.REJECT_DIALOG.BUTTON'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

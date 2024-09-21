@@ -1,0 +1,79 @@
+<div class="card">
+    <div class="form-option">
+        <div class="search-filter-area">
+            <div class="form-search">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        [(ngModel)]="keyword"
+                        class="form-control"
+                        placeholder="{{ 'PURCHASE_HISTORY.SEARCH_TEXT' | translate }}"
+                        aria-label="Recipient's username"
+                        aria-describedby="basic-addon2"
+                        (keyup.enter)="searchHistory()"
+                    />
+                    <div class="input-group-append">
+                        <button class="btn" type="button" (click)="searchHistory()">
+                            <i class="fad fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'date'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'date'"
+                    (click)="isSorting('date')"
+                >
+                    {{ "PURCHASE_HISTORY.COLUMN.DATE" | translate }}
+                </th>
+                <th>{{ "PURCHASE_HISTORY.COLUMN.PRICE" | translate }}</th>
+                <th>{{ "PURCHASE_HISTORY.COLUMN.PRODUCT" | translate }}</th>
+                <th>{{ "PURCHASE_HISTORY.COLUMN.NAME" | translate }}</th>
+                <th>{{ "PURCHASE_HISTORY.COLUMN.SYSTEM" | translate }}</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let history of historyList">
+                <td data-th="Date">{{ history.date | date : dateMonthFormat : undefined : "da-DK" }}</td>
+                <td data-th="Price">{{ history.price }}</td>
+                <td data-th="Product">{{ "PURCHASE_HISTORY.PRODUCT.PREMIUM_ACCOUNT" | translate }}</td>
+                <td data-th="Name">{{ history.memberName }}</td>
+                <td data-th="System">{{ "PURCHASE_HISTORY.SYSTEM." + history.system.toUpperCase() | translate }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'PURCHASE_HISTORY.NO_RESULT'"></span>
+    </div>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'PURCHASE_HISTORY.EMPTY_LIST'"></span>
+    </div>
+    <pagination
+        [boundaryLinks]="true"
+        [totalItems]="total"
+        [customFirstTemplate]="firstTemplate"
+        [customLastTemplate]="lastTemplate"
+        [customPreviousTemplate]="prevTemplate"
+        [customNextTemplate]="nextTemplate"
+        (pageChanged)="pageChanged($event)"
+    >
+    </pagination>
+    <ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-right"></i>
+    </ng-template>
+    <ng-template #lastTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-right"></i>
+    </ng-template>
+    <ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-left"></i>
+    </ng-template>
+    <ng-template #firstTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-left"></i>
+    </ng-template>
+</div>

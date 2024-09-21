@@ -1,0 +1,131 @@
+<h3 class="header">{{ "GENERAL_NOTIFICATION.EDIT_NOTIFICATION" | translate }}</h3>
+<div class="card">
+    <form [formGroup]="historyDetailForm">
+        <div class="form-group required-form">
+            <label for="exampleInput1">{{ "GENERAL_NOTIFICATION.HEADING" | translate }}</label>
+            <div>
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              f.full_heading.touched &&
+              (f.full_heading.errors || f.full_heading.errors?.required)
+          }"
+                    id="full_heading"
+                    name="full_heading"
+                    formControlName="full_heading"
+                    value="{{ notificationModel?.heading }}"
+                />
+                <div *ngIf="f.full_heading.touched" class="invalid-feedback">
+                    <app-control-messages [control]="historyDetailForm.get('full_heading')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group required-form">
+            <label for="exampleInput3">{{ "GENERAL_NOTIFICATION.MESSAGE" | translate }}</label>
+            <div>
+                <ckeditor
+                    class="form-control"
+                    style="min-height: 250px"
+                    [ngClass]="{
+            'is-invalid':
+              f.full_message.touched &&
+              (f.full_message.errors || f.full_message.errors?.required)
+          }"
+                    formControlName="full_message"
+                    name="full_message"
+                    [editor]="Editor"
+                    data="{{ notificationModel?.message }}"
+                    rows="6"
+                    [config]="{ toolbar: ['link'] }"
+                >
+                </ckeditor>
+                <div *ngIf="f.full_message.touched" class="invalid-feedback">
+                    <app-control-messages [control]="historyDetailForm.get('full_message')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-col-form-label" for="inputError1">{{ "GENERAL_NOTIFICATION.UPLOAD" | translate }}</label>
+            <div class="col">
+                <div style="padding-bottom: 10px; max-width: 300px" *ngIf="!this.notificationModel?.picture?.url">
+                    <ngx-dropzone
+                        (change)="onImageProfileSelected($event)"
+                        [expandable]="true"
+                        [accept]="'image/png,image/jpeg,image/jpg'"
+                        [multiple]="false"
+                        [maxFileSize]="1000000"
+                    >
+                        <ngx-dropzone-label>
+                            {{ "GENERAL_NOTIFICATION.DRAG_DROP_IMAGE" | translate }}
+                        </ngx-dropzone-label>
+                        <ngx-dropzone-image-preview
+                            ngProjectAs="ngx-dropzone-preview"
+                            *ngFor="let f of pushImage"
+                            [file]="f"
+                            [removable]="true"
+                            (removed)="onRemoveProfileSelected(f)"
+                        >
+                        </ngx-dropzone-image-preview>
+                    </ngx-dropzone>
+                </div>
+                <div class="img-view" *ngIf="this.notificationModel?.picture?.url">
+                    <img class="profile-img" src="{{ this.imageName }}" alt="" />
+                    <button type="button" class="btn btn-danger" (click)="removePushImage()">
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </div>
+                <div *ngIf="imageErrorSize" class="invalid-feedback" style="display: block">
+                    <div>{{ "GENERAL_NOTIFICATION.HELP_TEXT" | translate }}</div>
+                </div>
+                <i [translate]="'CHAT.HELP_TEXT'"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label></label>
+            <div class="button-area">
+                <button class="btn btn-primary" (click)="confirmModal.show()">{{ "FORM.SAVE" | translate }}</button>
+                <button class="btn btn-outline-secondary" [routerLink]="['/push-notifications']">
+                    {{ "FORM.CANCEL" | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--Send now confirm modal-->
+<div
+    bsModal
+    #confirmModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-heading" [translate]="'NOTIFICATION.CONFRIM_DIALOG.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'NOTIFICATION.CONFRIM_DIALOG.MESSAGESAVE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="confirmModal.hide()"
+                    [translate]="'NOTIFICATION.CONFRIM_DIALOG.NO'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="confirmModal.hide(); onSubmit()"
+                    [translate]="'NOTIFICATION.CONFRIM_DIALOG.YES'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

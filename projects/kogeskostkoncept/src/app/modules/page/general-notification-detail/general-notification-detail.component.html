@@ -1,0 +1,12 @@
+<div class="mobile-web-view notification-general" style="padding-bottom: 120px">
+    <div class="mobile-web-view-wrapper" *ngIf="model">
+        <div class="res-content">
+            <h3>{{ model?.heading }}</h3>
+            <p class="res-date">{{ model?.sent_date | date : fullDateTimeFormat : undefined : "da-DK" }}</p>
+            <p style="white-space: pre-wrap; word-wrap: break-word" [innerHTML]="model?.message"></p>
+        </div>
+        <div class="res-img" *ngIf="model?.picture?.url !== ''">
+            <img [src]="model?.picture?.url" />
+        </div>
+    </div>
+</div>

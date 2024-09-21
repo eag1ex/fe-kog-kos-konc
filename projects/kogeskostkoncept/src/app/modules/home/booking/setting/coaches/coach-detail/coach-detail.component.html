@@ -1,0 +1,325 @@
+<h3 class="header" *ngIf="!id">{{ "BOOKING.COACH.ADD_HEAD" | translate }}</h3>
+<h3 class="header" *ngIf="id">{{ "BOOKING.COACH.EDIT_HEAD" | translate }}</h3>
+
+<div class="card coach">
+    <form (ngSubmit)="onSubmit()" [formGroup]="coachDetailForm" *ngIf="coachDetailForm">
+        <div class="form-group">
+            <label for="name">{{ "BOOKING.COACH.NAME" | translate }}</label>
+            <div>
+                <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    [ngClass]="{
+            'is-invalid':
+              f.name.touched && (f.name.errors || f.name.errors?.required)
+          }"
+                    formControlName="name"
+                    value="{{ coachList?.name }}"
+                />
+                <div *ngIf="f.name.touched" class="invalid-feedback">
+                    <app-control-messages [control]="coachDetailForm.get('name')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-col-form-label" for="inputError1">{{ "BOOKING.COACH.UPLOAD_IMAGE" | translate }}</label>
+            <div class="col">
+                <div style="padding-bottom: 10px; max-width: 300px" *ngIf="!this.coachList?.picture?.url">
+                    <ngx-dropzone
+                        (change)="onImageSelected($event)"
+                        [expandable]="true"
+                        [accept]="'image/png,image/jpeg,image/jpg'"
+                        [multiple]="false"
+                        [maxFileSize]="1000000"
+                    >
+                        <ngx-dropzone-label> {{ "BOOKING.COACH.DROP_IMAGE_TEXT" | translate }} </ngx-dropzone-label>
+                        <ngx-dropzone-image-preview
+                            ngProjectAs="ngx-dropzone-preview"
+                            *ngFor="let coach of coachImage"
+                            [file]="coach"
+                            [removable]="true"
+                            (removed)="onRemoveImageSelected(coach)"
+                        >
+                        </ngx-dropzone-image-preview>
+                    </ngx-dropzone>
+                </div>
+                <div class="img-view" *ngIf="this.coachList?.picture?.url">
+                    <img class="profile-img" src="{{ this.name_image }}" alt="" (error)="setNoImage($event)" />
+                    <button type="button" class="btn btn-danger" (click)="removeCoachImage()">
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </div>
+                <div *ngIf="imageErrorSize" class="invalid-feedback" style="display: block">
+                    <div>{{ "FOOD_DETAIL.ERROR_MESSAGE_SIZE_IMAGE" | translate }}</div>
+                </div>
+                <i [translate]="'FOOD_DETAIL.HELP_TEXT'"></i>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>{{ "BOOKING.COACH.DESCIRPTION" | translate }}</label>
+            <div>
+                <textarea
+                    type="text"
+                    class="form-control"
+                    style="min-height: 100px"
+                    id="description"
+                    name="description"
+                    [ngClass]="{
+            'is-invalid':
+              f.name.touched && (f.name.errors || f.name.errors?.required)
+          }"
+                    formControlName="description"
+                    value="{{ coachList?.description }}"
+                ></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="enable">{{ "BOOKING.COACH.ENABLE" | translate }}</label>
+            <div>
+                <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                    <input #isTurnOn class="switch-input" type="checkbox" formControlName="enable" />
+                    <span class="switch-slider" data-checked="On" data-unchecked="Off"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="show_hide">{{ "BOOKING.COACH.SHOW_HIDE" | translate }}</label>
+            <div>
+                <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                    <input
+                        #isTurnOn
+                        class="switch-input"
+                        type="checkbox"
+                        formControlName="show_hide"
+                        (ngModelChange)="onSwitchChange($event)"
+                    />
+                    <span class="switch-slider" data-checked="Show" data-unchecked="Hide"></span>
+                </label>
+            </div>
+        </div>
+        <div class="form-edit">
+            <div class="form-option">
+                <h5 class="header">{{ "BOOKING.COACH.CYCLE_HEAD" | translate }}</h5>
+            </div>
+            <div class="form-group">
+                <label for="percentage">{{ "BOOKING.COACH.AVAILABILITY_PERCENTAGE" | translate }}</label>
+                <div>
+                    <input
+                        type="number"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                        onpaste="return false"
+                        onmousewheel="this.blur()"
+                        class="form-control"
+                        id="percentage"
+                        name="percentage"
+                        [ngClass]="{
+              'is-invalid':
+                f.percentage.touched &&
+                (f.percentage.errors || f.percentage.errors?.required)
+            }"
+                        formControlName="percentage"
+                    />
+                    <div *ngIf="f.percentage.touched" class="invalid-feedback">
+                        <app-control-messages [control]="coachDetailForm.get('percentage')"> </app-control-messages>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="period_start">{{ "BOOKING.COACH.PERIOD_START" | translate }}</label>
+                <div class="short">
+                    <input
+                        type="text"
+                        class="form-control date-picker"
+                        [ngClass]="{
+              'is-invalid':
+                f.period_start.dirty &&
+                (f.period_start.errors || f.period_start.errors?.required)
+            }"
+                        formControlName="period_start"
+                        bsDatepicker
+                        [dateCustomClasses]="dateCustomClasses"
+                        [maxDate]="f.period_end?.value"
+                        (onHidden)="f.period_start.markAsDirty()"
+                        [bsConfig]="{
+              isAnimated: true,
+              dateInputFormat: datePickerFormat
+            }"
+                    />
+                    <div *ngIf="f.period_start.touched" class="invalid-feedback">
+                        <app-control-messages [control]="coachDetailForm.get('period_start')"> </app-control-messages>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="period_end">{{ "BOOKING.COACH.PERIOD_END" | translate }}</label>
+                <div class="short">
+                    <input
+                        type="text"
+                        class="form-control date-picker"
+                        [ngClass]="{
+              'is-invalid':
+                f.period_end.dirty &&
+                (f.period_end.errors || f.period_end.errors?.required)
+            }"
+                        formControlName="period_end"
+                        bsDatepicker
+                        [dateCustomClasses]="dateCustomClasses"
+                        [minDate]="f.period_start?.value"
+                        (onHidden)="f.period_end.markAsDirty()"
+                        [bsConfig]="{
+              isAnimated: true,
+              showClearButton: true,
+              clearPosition: 'right',
+              dateInputFormat: datePickerFormat
+            }"
+                    />
+                    <div *ngIf="f.period_end.touched" class="invalid-feedback">
+                        <app-control-messages [control]="coachDetailForm.get('period_end')"> </app-control-messages>
+                    </div>
+                </div>
+            </div>
+            <div formArrayName="weeks">
+                <div
+                    class="card-collasps"
+                    *ngFor="
+            let week of getWeeks(coachDetailForm);
+            let i = index;
+            last as isLast
+          "
+                >
+                    <div [formGroupName]="i">
+                        <div class="card-collasps-header">
+                            <button
+                                type="button"
+                                class="btn btn-collasps"
+                                (click)="setCollapse(i, !collapseState[i])"
+                                [class.collasped]="collapseState[i]"
+                                [attr.aria-expanded]="collapseState[i]"
+                                aria-controls="collapseBasic"
+                            >
+                                {{ "BOOKING.COACH.WEEK" | translate }} {{ week.value.name }} {{ "BOOKING.COACH.OF" |
+                                translate }} 4
+                            </button>
+                        </div>
+                        <div id="collapseBasic" [collapse]="collapseState[i]" [isAnimated]="true" class="card-body">
+                            <div formArrayName="days">
+                                <div class="card-item-warp">
+                                    <div
+                                        class="card-item"
+                                        *ngFor="let day of getDays(week); let j = index"
+                                        [formGroupName]="j"
+                                    >
+                                        <div class="date">
+                                            <div class="custom-control custom-checkbox">
+                                                <input
+                                                    class="custom-control-input"
+                                                    #isEnable
+                                                    type="checkbox"
+                                                    name="isEnableCheckbox"
+                                                    formControlName="isEnable"
+                                                    (change)="checkboxChange($event.target.checked, day)"
+                                                    id="{{ 'check' + week.value.name + j }}"
+                                                />
+                                                <label
+                                                    class="custom-control-label"
+                                                    for="{{ 'check' + week.value.name + j }}"
+                                                    >{{ translateDay(day.value.name) }}</label
+                                                >
+                                            </div>
+                                        </div>
+                                        <div class="time-warp">
+                                            <div class="time">
+                                                <div class="inline-select">
+                                                    <span>{{ "BOOKING.COACH.FROM" | translate }} : </span>
+                                                    <span>{{ "BOOKING.COACH.HOURS" | translate }}</span>
+                                                    <select
+                                                        class="form-control custom-select"
+                                                        formControlName="startTimeH"
+                                                    >
+                                                        <option *ngFor="let h of hourList" [value]="h.hour">
+                                                            {{ h.hour }}
+                                                        </option>
+                                                    </select>
+                                                    <span>{{ "BOOKING.COACH.MINS" | translate }}</span>
+                                                    <select
+                                                        class="form-control custom-select"
+                                                        formControlName="startTimeM"
+                                                    >
+                                                        <option *ngFor="let m of minuteList" [value]="m.minute">
+                                                            {{ m.minute }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="time">
+                                                <div class="inline-select">
+                                                    <span>{{ "BOOKING.COACH.TO" | translate }} : </span>
+                                                    <span>{{ "BOOKING.COACH.HOURS" | translate }}</span>
+                                                    <select
+                                                        class="form-control custom-select"
+                                                        formControlName="endTimeH"
+                                                        [ngClass]="{
+                              'is-invalid': isEndTimeInvalid(day)
+                            }"
+                                                    >
+                                                        <option *ngFor="let h of hourList" [value]="h.hour">
+                                                            {{ h.hour }}
+                                                        </option>
+                                                    </select>
+                                                    <span>{{ "BOOKING.COACH.MINS" | translate }}</span>
+                                                    <select
+                                                        class="form-control custom-select"
+                                                        formControlName="endTimeM"
+                                                        [ngClass]="{
+                              'is-invalid': isEndTimeInvalid(day)
+                            }"
+                                                    >
+                                                        <option *ngFor="let m of minuteList" [value]="m.minute">
+                                                            {{ m.minute }}
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="button-area">
+                                <button
+                                    *ngIf="!isLast"
+                                    type="button"
+                                    class="btn btn-outline-primary"
+                                    (click)="duplicateWorkTime(week, i)"
+                                >
+                                    <i class="fad fa-copy"></i>{{ "BOOKING.COACH.DUPLICATE" | translate }}
+                                </button>
+                                <div *ngIf="isLast">&nbsp;</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="button-area">
+            <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+            <button
+                class="btn btn-outline-secondary"
+                [routerLink]="['/booking/booking-setting']"
+                [queryParams]="{ tab: 'coaches' }"
+            >
+                {{ "FORM.CANCEL" | translate }}
+            </button>
+            <button
+                type="button"
+                class="btn btn-outline-primary"
+                [hidden]="!id"
+                [routerLink]="['/booking', 'coaches']"
+                [queryParams]="{ duplicateId: id }"
+            >
+                <i class="fad fa-copy"></i>{{ "LIST.DUPLICATION" | translate }}
+            </button>
+        </div>
+    </form>
+</div>

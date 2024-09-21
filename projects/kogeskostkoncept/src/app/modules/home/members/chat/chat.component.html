@@ -1,0 +1,124 @@
+<div class="loading" [hidden]="!loading"></div>
+<div class="loading-show" [hidden]="!loading"></div>
+<bs-modal-backdrop class="modal-backdrop fade in show" [hidden]="!loading"></bs-modal-backdrop>
+<div class="card">
+    <div class="card chat-wrapper">
+        <div class="row">
+            <div class="col-12 col-xl-5">
+                <div class="form-group">
+                    <label for="exampleInput3">{{ "NOTIFICATION_LIST.ADD_TITLE_MODAL" | translate }}</label>
+                    <div>
+                        <angular2-multiselect
+                            [data]="dropdownFollowUpList"
+                            [(ngModel)]="followUp"
+                            [settings]="followUpSettings"
+                            (onSelect)="onChangeFollowUp()"
+                            (onDeSelectAll)="onChangeFollowUp()"
+                            (onDeSelect)="onChangeFollowUp()"
+                            (onSelectAll)="onChangeFollowUp()"
+                            (onOpen)="onOpen($event)"
+                            (onClose)="onClose($event)"
+                        >
+                        </angular2-multiselect>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div #chat class="chat" *ngIf="chat$ | async as chat">
+            <div #chatbox class="chat-screen">
+                <div class="chat-messages" *ngFor="let msg of chat; trackBy: trackByCreated">
+                    <div class="sender-message" *ngIf="chatId !== msg.data.sender_id">
+                        <p style="white-space: pre-wrap">
+                            <a *ngIf="msg.data.image">
+                                <img src="{{ msg.data.image }}" (click)="openImage2(msg.data.image, msg.data.text)" />
+                            </a>
+                            {{ msg.data.text }}
+                        </p>
+                        <span>{{ msg.data.created_date | date : dateTimeFormat }}</span>
+                    </div>
+                    <div class="receiver-message" *ngIf="chatId === msg.data.sender_id">
+                        <p style="white-space: pre-wrap">
+                            <a *ngIf="msg.data.image">
+                                <img src="{{ msg.data.image }}" (click)="openImage2(msg.data.image, msg.data.text)" />
+                            </a>
+                            {{ msg.data.text }}
+                        </p>
+
+                        <span>{{ msg.data.created_date | date : dateTimeFormat }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-area">
+                <div class="custom-file">
+                    <!-- <input type="file" class="custom-file-input" id="customFile">-->
+                    <label
+                        class="custom-file-label btn btn-primary btn-send-photo"
+                        for="customFile"
+                        (click)="drop.showFileSelector()"
+                    >
+                        <i class="fad fa-image"></i>
+                    </label>
+                </div>
+                <div class="chat-box">
+                    <div class="img-box" [style.display]="selectedImage.length <= 0 ? 'none' : 'block'">
+                        <ngx-dropzone
+                            #drop
+                            (change)="onSelectedImage($event)"
+                            [expandable]="true"
+                            [accept]="'image/png,image/jpeg,image/jpg'"
+                            [multiple]="false"
+                            [maxFileSize]="1000000"
+                        >
+                            <ngx-dropzone-label> {{ "FOOD_DETAIL.DROP_IMAGE_TEXT" | translate }} </ngx-dropzone-label>
+                            <ngx-dropzone-image-preview
+                                ngProjectAs="ngx-dropzone-preview"
+                                *ngFor="let image of selectedImage"
+                                [file]="image"
+                                [removable]="true"
+                                (removed)="onRemoveImage(image)"
+                            >
+                            </ngx-dropzone-image-preview>
+                        </ngx-dropzone>
+                    </div>
+                    <textarea
+                        class="form-control"
+                        id="newMsg"
+                        [(ngModel)]="newMsg"
+                        name="newMsg"
+                        (keydown.enter)="onEnter($event)"
+                    ></textarea>
+                </div>
+                <button class="btn btn-primary btn-send-message" (click)="submit()">
+                    <i class="fad fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+        <div class="mb-4">
+            <div *ngIf="imageErrorSize" class="invalid-feedback" style="display: block">
+                <div>{{ "CHAT.ERROR_MESSAGE_SIZE_IMAGE" | translate }}</div>
+            </div>
+            <i [translate]="'CHAT.HELP_TEXT_IMAGE'"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div
+    bsModal
+    #showImageModal="bs-modal"
+    class="modal fade"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="dialog-sizes-name1"
+>
+    <div class="modal-dialog modal-dialog-centered modal-lightroom">
+        <div class="modal-content">
+            <button type="button" class="close" aria-label="Close" (click)="showImageModal.hide()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body">
+                <img [src]="showImage" />
+            </div>
+        </div>
+    </div>
+</div>

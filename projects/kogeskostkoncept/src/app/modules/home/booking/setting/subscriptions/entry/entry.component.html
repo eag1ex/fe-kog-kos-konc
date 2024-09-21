@@ -1,0 +1,288 @@
+<!-- eslint-disable -->
+
+<h3 class="header" *ngIf="!id">{{ "BOOKING.SUBSCRIPTION.ADD_HEAD" | translate }}</h3>
+<h3 class="header" *ngIf="id">{{ "BOOKING.SUBSCRIPTION.EDIT_HEAD" | translate }}</h3>
+<div class="card customer">
+    <form (ngSubmit)="onSubmit()" [formGroup]="subscriptionForm">
+        <div class="form-group required-form">
+            <label for="exampleInput1" [translate]="'BOOKING.SUBSCRIPTION.SUBSCRIPTION_NAME'"></label>
+            <div>
+                <input
+                    type="text"
+                    [ngClass]="{
+            'is-invalid':
+              f.name.touched && (f.name.errors || f.name.errors?.required)
+          }"
+                    class="form-control"
+                    id="name"
+                    formControlName="name"
+                />
+                <div *ngIf="f.name.touched" class="invalid-feedback">
+                    <app-control-messages [control]="subscriptionForm.get('name')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="exampleInput3" [translate]="'BOOKING.SUBSCRIPTION.DESCRIPTION'"></label>
+            <div>
+                <textarea
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              f.description.touched &&
+              (f.description.errors || f.description.errors?.required)
+          }"
+                    id="description"
+                    style="min-height: 150px"
+                    formControlName="description"
+                ></textarea>
+                <div *ngIf="f.description.touched" class="invalid-feedback">
+                    <app-control-messages [control]="subscriptionForm.get('description')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label></label>
+            <div class="button-area">
+                <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                <button
+                    class="btn btn-outline-secondary"
+                    [routerLink]="['/booking/booking-setting']"
+                    [queryParams]="{ tab: 'subscriptions' }"
+                >
+                    {{ "FORM.CANCEL" | translate }}
+                </button>
+            </div>
+        </div>
+    </form>
+    <div class="form-edit" *ngIf="id">
+        <div class="form-option">
+            <div class="form-option-title">
+                <h4 class="header" [translate]="'BOOKING.SUBSCRIPTION.SERVICE_TO_SUBSCRIPTION'"></h4>
+                <p class="text-danger" [translate]="'BOOKING.SUBSCRIPTION.WARNING_TEXT'"></p>
+            </div>
+            <div class="button-area">
+                <button
+                    class="btn btn-primary"
+                    (click)="
+            btnCreateServiceSubscription(); addAndEditSubscription.show()
+          "
+                >
+                    <i class="fad fa-plus"></i>{{ "BOOKING.SUBSCRIPTION.NEW_BUTTON" | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div
+        dragula="SERVICE_SUBSCRIPTION"
+        [dragulaModel]="serviceSubscriptionList"
+        (dragulaModelChange)="onDropCard($event)"
+    >
+        <div *ngFor="let serviceSubscription of serviceSubscriptionList">
+            <div class="dragabled" *ngIf="!hasServiceSubscription">
+                <div class="card-collasps">
+                    <div class="card-collasps-header">&nbsp;</div>
+                    <div id="collapseBasic" class="card-body">
+                        <div class="card-item">
+                            <div class="btn-group" dropdown placement="bottom right">
+                                <button
+                                    id="button-animated"
+                                    dropdownToggle
+                                    type="button"
+                                    class="btn btn-link dropdown-toggle"
+                                    aria-controls="dropdown-animated"
+                                >
+                                    <i class="fad fa-ellipsis-v"></i>
+                                </button>
+                                <ul
+                                    id="dropdown-animated"
+                                    *dropdownMenu
+                                    class="dropdown-menu dropdown-menu-right"
+                                    role="menu"
+                                    aria-labelledby="button-animated"
+                                >
+                                    <li role="menuitem">
+                                        <a
+                                            class="dropdown-item"
+                                            href="#"
+                                            (click)="
+                        btnUpdateServiceSubscription(
+                          serviceSubscription,
+                          $event
+                        );
+                        addAndEditSubscription.show()
+                      "
+                                            ><i class="fad fa-pencil"></i>{{ "BOOKING.SUBSCRIPTION.EDIT" | translate
+                                            }}</a
+                                        >
+                                    </li>
+                                    <li role="menuitem">
+                                        <a
+                                            class="dropdown-item"
+                                            href="#"
+                                            (click)="
+                        btnDeleteServiceSubscription(
+                          serviceSubscription.uid,
+                          $event
+                        );
+                        deleteSubscription.show()
+                      "
+                                            ><i class="fad fa-trash"></i>{{ "BOOKING.SUBSCRIPTION.DELETE" | translate
+                                            }}</a
+                                        >
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="card-item-info">
+                                <h5>{{ serviceSubscription.service }} ({{ serviceSubscription.category }})</h5>
+                                <p>{{ getServiceSubscriptionLimitText(serviceSubscription) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-no-data" *ngIf="hasServiceSubscription">
+        <span [translate]="'BOOKING.SUBSCRIPTION.NO_RESULT'"></span>
+    </div>
+</div>
+<!--Modal create and edit-->
+<form (ngSubmit)="onSubmitSubscription()" [formGroup]="serviceSubscriptionForm">
+    <div
+        bsModal
+        #addAndEditSubscription="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" *ngIf="idServiceSubscription == null">
+                        {{ "BOOKING.SUBSCRIPTION.ADD_SERVICE_SUBSCRIPTION" | translate }}
+                    </h4>
+                    <h4 class="modal-title" *ngIf="idServiceSubscription != null">
+                        {{ "BOOKING.SUBSCRIPTION.EDIT_SERVICE_SUBSCRIPTION" | translate }}
+                    </h4>
+                    <button type="button" class="close" aria-label="Close" (click)="addAndEditSubscription.hide()">
+                        <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required-form">
+                        <label for="exampleInput3" [translate]="'BOOKING.SUBSCRIPTION.SERVICE'"></label>
+                        <div class="short">
+                            <angular2-multiselect
+                                [data]="serviceList"
+                                formControlName="service"
+                                [ngClass]="{
+                  'is-invalid':
+                    subscriptionModalForm.service.touched &&
+                    (subscriptionModalForm.service.errors ||
+                      subscriptionModalForm.service.errors?.required)
+                }"
+                                [(ngModel)]="selectedServiceItems"
+                                [settings]="serviceDropdownSettings"
+                            >
+                            </angular2-multiselect>
+                            <div *ngIf="subscriptionModalForm.service.touched" class="invalid-feedback">
+                                <app-control-messages [control]="serviceSubscriptionForm.get('service')">
+                                </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required-form">
+                        <label for="exampleInput3" [translate]="'BOOKING.SUBSCRIPTION.FREQUENCY'"></label>
+                        <div class="short">
+                            <angular2-multiselect
+                                [data]="frequencyList"
+                                formControlName="frequency"
+                                [ngClass]="{
+                  'is-invalid':
+                    subscriptionModalForm.frequency.touched &&
+                    (subscriptionModalForm.frequency.errors ||
+                      subscriptionModalForm.frequency.errors?.required)
+                }"
+                                [(ngModel)]="selectedFrequencyItems"
+                                [settings]="frequencyDropdownSettings"
+                                (onSelect)="onFrequencyItemSelect($event)"
+                            >
+                            </angular2-multiselect>
+                            <div *ngIf="subscriptionModalForm.frequency.touched" class="invalid-feedback">
+                                <app-control-messages [control]="serviceSubscriptionForm.get('frequency')">
+                                </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group required-form" *ngIf="showLimitation">
+                        <label for="exampleInput3" [translate]="'BOOKING.SUBSCRIPTION.LIMITATION'"></label>
+                        <div class="short">
+                            <angular2-multiselect
+                                [data]="limitationList"
+                                [(ngModel)]="selectedLimitationItems"
+                                [settings]="limitationDropdownSettings"
+                                formControlName="limitation"
+                                [ngClass]="{
+                  'is-invalid':
+                    subscriptionModalForm.limitation.touched &&
+                    (subscriptionModalForm.limitation.errors ||
+                      subscriptionModalForm.limitation.errors?.required)
+                }"
+                            >
+                            </angular2-multiselect>
+                            <div *ngIf="subscriptionModalForm.limitation.touched" class="invalid-feedback">
+                                <app-control-messages [control]="serviceSubscriptionForm.get('limitation')">
+                                </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="addAndEditSubscription.hide()">
+                        {{ "FORM.CANCEL" | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!--Modal delete-->
+<div
+    bsModal
+    #deleteSubscription="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="deleteSubscription.hide()"
+                    [translate]="'MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="deleteSubscription.hide(); deleteServiceSubscription()"
+                    [translate]="'MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

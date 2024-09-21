@@ -1,0 +1,86 @@
+<div class="pdf" id="contentToConvert" #pdf>
+    <table>
+        <thead>
+            <tr>
+                <td>
+                    <div class="header">
+                        <img src="assets/img/brand/logo.png" />
+                        <div class="title">
+                            <h2>{{ "PDF.DIET_PLAN.TITLE" | translate }}</h2>
+                        </div>
+                        <div class="contact">
+                            <span class="name">{{ dietPlanData?.full_name }}</span>
+                            <span class="phone"
+                                >{{ "PDF.PHONE_NUMBER" | translate }} {{ dietPlanData?.phone_number }}</span
+                            >
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="body-fixed">
+                        <div class="info">
+                            <p class="date">
+                                {{ "PDF.DIET_PLAN.RENEWAL_DATE" | translate }}: {{
+                                dietPlanData?.dietPlanForm?.diet_plan_date | date : dateFormat : undefined : "da-DK" }}
+                            </p>
+
+                            <h5>{{ "PDF.DIET_PLAN.INFORMATION_TITLE" | translate }}</h5>
+                            <div class="meal-description" [innerHTML]="dietPlanData?.dietPlanForm?.information"></div>
+                        </div>
+                        <div class="meal">
+                            <div class="meal-warp" *ngFor="let dietPlanDay of dietPlanData?.dietPlanDetail">
+                                <h3>{{ dietPlanDay?.name }}</h3>
+
+                                <div class="food" *ngFor="let dietPlanMeal of dietPlanDay?.dietPlanfood">
+                                    <div class="food-img">
+                                        <img
+                                            [src]="dietPlanMeal?.imageUrl"
+                                            (error)="setNoImage($event)"
+                                            (load)="imageLoaded()"
+                                        />
+                                    </div>
+                                    <div class="food-details">
+                                        <p class="food-name">
+                                            {{ dietPlanMeal.amount }} {{ dietPlanMeal.unit }} {{ dietPlanMeal?.name }}
+                                        </p>
+                                        <p class="food-weight">{{ "DIET_PLAN.NUTRITION" | translate }}</p>
+                                        <div class="food-mineral">
+                                            <span
+                                                ><b>{{ "FOODS.LIST_KCAL" | translate }}:</b>{{ dietPlanMeal?.kcal
+                                                }}</span
+                                            >
+                                            <span
+                                                ><b>{{ "FOODS.LIST_CARBS" | translate }}:</b>{{ dietPlanMeal?.protein }}
+                                                gr.</span
+                                            >
+                                            <span
+                                                ><b>{{ "FOODS.LIST_PROTEIN" | translate }}:</b>{{ dietPlanMeal?.carbs }}
+                                                gr.</span
+                                            >
+                                            <span
+                                                ><b>{{ "FOODS.LIST_FAT" | translate }}:</b>{{ dietPlanMeal?.fiber }}
+                                                gr.</span
+                                            >
+                                            <span
+                                                ><b>{{ "FOODS.LIST_KOST" | translate }}:</b>{{ dietPlanMeal?.fat }}
+                                                gr.</span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="note">
+                                    {{ "PDF.NOTE" | translate }}:
+                                    <span>{{ dietPlanDay?.note }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

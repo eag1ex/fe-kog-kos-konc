@@ -1,0 +1,49 @@
+<div class="card calendar">
+    <div class="card-header">
+        <h3 class="header">{{ currentDate | date : "yyyy" }}</h3>
+        <div class="button-area">
+            <button class="btn btn-outline-primary" (click)="backY()">
+                <i class="fad fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-outline-primary" (click)="nextY()">
+                <i class="fad fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting no-warp"
+                    [class.asc]="
+            paging.TypeSort == 'asc' && paging.Field == 'created_date'
+          "
+                    [class.desc]="
+            paging.TypeSort == 'desc' && paging.Field == 'created_date'
+          "
+                    (click)="isSorting('created_date')"
+                >
+                    {{ "VOUCHER_LOGS.CREATED_DATE" | translate }}
+                </th>
+                <th>{{ "VOUCHER_LOGS.ACTION" | translate }}</th>
+                <th>{{ "VOUCHER_LOGS.VOUCHER_TIMES_NEW" | translate }}</th>
+                <th>{{ "VOUCHER_LOGS.SERVICE" | translate }}</th>
+                <th>{{ "VOUCHER_LOGS.VOUCHER_TIMES_OLD" | translate }}</th>
+                <th>{{ "VOUCHER_LOGS.NOTE" | translate }}</th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let voucher of voucherLogList">
+                <td>{{ voucher.created_date | date : "EEE MMM d, y, HH:mm" : undefined : "da-DK" }}</td>
+                <td>{{ "VOUCHER_LOGS.VOUCHER_ACTION." + voucher.action.toUpperCase() | translate }}</td>
+                <td>{{ voucher.voucher_times_new }}</td>
+                <td>{{ voucher.service }}</td>
+                <td>{{ voucher.voucher_times_old }}</td>
+                <td>{{ voucher.note }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'VOUCHER_LOGS.NO_RESULT'"></span>
+    </div>
+</div>

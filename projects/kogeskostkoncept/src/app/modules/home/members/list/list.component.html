@@ -1,0 +1,9 @@
+<h3 class="header">{{ "MEMBER.CUSTOMER" | translate }}</h3>
+<tabset #staticTabs>
+    <tab id="tab_active" heading="{{ 'MEMBER.ACTIVE' | translate }}" (selectTab)="doThisOnSelect($event)">
+        <app-active *ngIf="this.staticTabs.tabs[0].active"></app-active>
+    </tab>
+    <tab id="tab_inactive" heading="{{ 'MEMBER.INACTIVE' | translate }}" (selectTab)="doThisOnSelect($event)">
+        <app-inactive *ngIf="this.staticTabs.tabs[1].active"></app-inactive>
+    </tab>
+</tabset>

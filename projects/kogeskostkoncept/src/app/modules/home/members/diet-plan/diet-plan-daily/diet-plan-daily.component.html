@@ -1,0 +1,327 @@
+<form (ngSubmit)="onSubmit()" [formGroup]="dietPlanForm">
+    <div class="form-group">
+        <label for="exampleInput3">{{ "DIET_PLAN.IS_TURN_ON_DIET_PLAN" | translate }}</label>
+        <div>
+            <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                <input #isTurnOn class="switch-input" type="checkbox" formControlName="is_turn_on_diet_plan" />
+                <span
+                    class="switch-slider"
+                    attr.data-checked="{{ 'FORM.ON' | translate }}"
+                    attr.data-unchecked="{{ 'FORM.OFF' | translate }}"
+                ></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInput3">{{ "DIET_PLAN.IS_TURN_ON_ENERGY" | translate }}</label>
+        <div>
+            <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                <input
+                    #isTurnOn
+                    class="switch-input"
+                    type="checkbox"
+                    formControlName="is_turn_on"
+                    (ngModelChange)="onModelChange($event)"
+                />
+                <span
+                    class="switch-slider"
+                    attr.data-checked="{{ 'FORM.ON' | translate }}"
+                    attr.data-unchecked="{{ 'FORM.OFF' | translate }}"
+                ></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group {{ getRequriedClass() }}">
+        <label for="exampleInput3">{{ "FOODS.LIST_KCAL" | translate }}</label>
+        <div class="short">
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              isTurnOn &&
+              f.kcal.touched &&
+              (f.kcal.errors || f.kcal.errors?.required)
+          }"
+                    id="kcal"
+                    name="kcal"
+                    formControlName="kcal"
+                    value="{{ memberDetail?.diet_plan_daily?.kcal }}"
+                />
+                <div *ngIf="f.kcal.touched" class="invalid-feedback">
+                    <app-control-messages [control]="dietPlanForm.get('kcal')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group {{ getRequriedClass() }}">
+        <label for="exampleInput3">{{ "FOODS.LIST_CARBS" | translate }}</label>
+        <div class="short">
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              isTurnOn &&
+              f.carbs.touched &&
+              (f.carbs.errors || f.carbs.errors?.required)
+          }"
+                    id="carbs"
+                    name="carbs"
+                    formControlName="carbs"
+                    value="{{ memberDetail?.diet_plan_daily?.carbs }}"
+                />
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">gr.</span>
+                </div>
+                <div *ngIf="f.carbs.touched" class="invalid-feedback">
+                    <app-control-messages [control]="dietPlanForm.get('carbs')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group {{ getRequriedClass() }}">
+        <label for="exampleInput3">{{ "FOODS.LIST_PROTEIN" | translate }}</label>
+        <div class="short">
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              isTurnOn &&
+              f.protein.touched &&
+              (f.protein.errors || f.protein.errors?.required)
+          }"
+                    id="protein"
+                    name="protein"
+                    formControlName="protein"
+                    value="{{ memberDetail?.diet_plan_daily?.protein }}"
+                />
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">gr.</span>
+                </div>
+                <div *ngIf="f.protein.touched" class="invalid-feedback">
+                    <app-control-messages [control]="dietPlanForm.get('protein')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group {{ getRequriedClass() }}">
+        <label for="exampleInput3">{{ "FOODS.LIST_FAT" | translate }}</label>
+        <div class="short">
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              isTurnOn &&
+              f.fat.touched &&
+              (f.fat.errors || f.fat.errors?.required)
+          }"
+                    id="fat"
+                    name="fat"
+                    formControlName="fat"
+                    value="{{ memberDetail?.diet_plan_daily?.fat }}"
+                />
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">gr.</span>
+                </div>
+                <div *ngIf="f.fat.touched" class="invalid-feedback">
+                    <app-control-messages [control]="dietPlanForm.get('fat')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group {{ getRequriedClass() }}">
+        <label for="exampleInput3">{{ "DIET_PLAN.KOSTFIBER" | translate }}</label>
+        <div class="short">
+            <div class="input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+            'is-invalid':
+              isTurnOn &&
+              f.fiber.touched &&
+              (f.fiber.errors || f.fiber.errors?.required)
+          }"
+                    id="fiber"
+                    name="fiber"
+                    formControlName="fiber"
+                    value="{{ memberDetail?.diet_plan_daily?.fiber }}"
+                />
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">gr.</span>
+                </div>
+                <div *ngIf="f.fiber.touched" class="invalid-feedback">
+                    <app-control-messages [control]="dietPlanForm.get('fiber')"> </app-control-messages>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="exampleInput3">{{ "DIET_PLAN.DATE" | translate }}</label>
+        <div class="short">
+            <input
+                type="text"
+                [ngClass]="{
+          'is-invalid':
+            isTurnOn &&
+            f.diet_plan_date.touched &&
+            (f.diet_plan_date.errors || f.diet_plan_date.errors?.required)
+        }"
+                class="form-control date-picker"
+                bsDatepicker
+                name="diet_plan_date"
+                [dateCustomClasses]="dateCustomClasses"
+                formControlName="diet_plan_date"
+                [bsConfig]="{
+          isAnimated: true,
+          showClearButton: true,
+          clearPosition: 'right',
+          dateInputFormat: datePickerFormat
+        }"
+                value="{{ diet_plan_date | date : dateFormat }}"
+                readonly
+            />
+            <div *ngIf="f.diet_plan_date.touched" class="invalid-feedback">
+                <app-control-messages [control]="dietPlanForm.get('diet_plan_date')"> </app-control-messages>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>{{ "DIET_PLAN.INTERNAL_NOTE" | translate }}</label>
+        <div>
+            <textarea
+                type="text"
+                class="form-control"
+                style="min-height: 100px"
+                formControlName="internal_note"
+            ></textarea>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInput1">{{ "DIET_PLAN.BUTTON_TEXT" | translate }}</label>
+        <div>
+            <input
+                type="text"
+                class="form-control"
+                [ngClass]="{
+          'is-invalid':
+            isTurnOn &&
+            f.button_text.touched &&
+            (f.button_text.errors || f.button_text.errors?.required)
+        }"
+                id="button_text"
+                name="button_text"
+                formControlName="button_text"
+                value="{{ memberDetail?.diet_plan_daily?.button_text }}"
+            />
+            <div *ngIf="f.button_text.touched" class="invalid-feedback">
+                <app-control-messages [control]="dietPlanForm.get('button_text')"> </app-control-messages>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInput3"> {{ "DIET_PLAN.INFOMATION" | translate }} </label>
+        <div>
+            <ckeditor
+                class="form-control"
+                [ngClass]="{
+          'is-invalid':
+            isTurnOn &&
+            f.information.touched &&
+            (f.information.errors || f.information.errors?.required)
+        }"
+                formControlName="information"
+                name="information"
+                [editor]="Editor"
+                data="memberDetail?.diet_plan_daily?.information"
+                rows="6"
+                [config]="{
+          toolbar: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'bulletedList',
+            'undo',
+            'redo'
+          ]
+        }"
+            >
+            </ckeditor>
+            <div *ngIf="f.information.touched" class="invalid-feedback">
+                <app-control-messages [control]="dietPlanForm.get('information')"> </app-control-messages>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" *ngIf="isAdmin">
+        <label for="exampleInput3">{{ "DIET_PLAN.LOCK_BUTTON" | translate }}</label>
+        <div>
+            <label class="switch switch-label switch-pill switch-outline-primary-alt">
+                <input #isTurnOn class="switch-input" type="checkbox" formControlName="is_lock_diet_plan" />
+                <span class="switch-slider" data-checked="On" data-unchecked="Off"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="form-group" *ngIf="isLockDietPlan">
+        <label></label>
+        <div class="button-area">
+            <button class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+        </div>
+    </div>
+</form>
+
+<div
+    bsModal
+    #notificationModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+    styly="z-index:100000;"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'NOTIFICATION_MODAL.HEADER'"></div>
+            </div>
+            <div class="modal-body">
+                <span [translate]="'MEMBER_TABS.DIET_PLAN'"></span>
+                <span [translate]="'NOTIFICATION_MODAL.TITLE'"></span><br />
+                <span [translate]="'NOTIFICATION_MODAL.DESCRIPTION'"></span>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="notificationModal.hide(); saveDietPlanDaily(false)"
+                    [translate]="'NOTIFICATION_MODAL.REJECT'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="notificationModal.hide(); saveDietPlanDaily(true)"
+                    [translate]="'NOTIFICATION_MODAL.SEND'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

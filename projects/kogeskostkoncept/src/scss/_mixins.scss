@@ -1,0 +1,103 @@
+@mixin label {
+    font-weight: $font-weight-bold;
+    font-size: $label-font-size;
+    color: $black;
+}
+
+@mixin button-variant($color) {
+    box-shadow: 0 2px 2px rgba($color, 0.5);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    line-height: inherit;
+
+    &:focus,
+    &:active {
+        box-shadow: 0 2px 2px rgba($color, 0.5);
+    }
+}
+
+@mixin button-outline-variant($color) {
+    box-shadow: 0 2px 2px rgba($gray-800, 0.16);
+    letter-spacing: 0.1rem;
+    white-space: nowrap;
+    line-height: inherit;
+
+    &:focus,
+    &:active {
+        box-shadow: 0 2px 2px rgba($color, 0.5);
+    }
+}
+
+@mixin button-table-variant($color) {
+    box-shadow: 0 2px 2px rgba($gray-800, 0.12);
+    background: $white;
+    border-color: $border-color;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+
+    &:hover {
+        background: $color;
+    }
+
+    &:focus,
+    &:active {
+        box-shadow: 0 2px 2px rgba($color, 0.3);
+    }
+}
+
+@mixin padding-res {
+    padding: 30px;
+
+    @include media-breakpoint-down($breakpoint-mobile-down) {
+        padding: 15px;
+    }
+}
+
+@mixin padding-res-bottom {
+    padding-bottom: 30px;
+
+    @include media-breakpoint-down($breakpoint-mobile-down) {
+        padding-bottom: 15px;
+    }
+}
+
+@mixin padding-res-top {
+    padding-top: 30px;
+
+    @include media-breakpoint-down($breakpoint-mobile-down) {
+        padding-top: 15px;
+    }
+}
+
+@mixin margin-res-bottom {
+    margin-bottom: 30px;
+
+    @include media-breakpoint-down($breakpoint-mobile-down) {
+        margin-bottom: 15px;
+    }
+}
+
+@mixin margin-res-bottom-form {
+    margin-bottom: 25px;
+
+    @include media-breakpoint-down($breakpoint-mobile-down) {
+        margin-bottom: 15px;
+    }
+}
+
+@mixin btn-input-group {
+    position: absolute;
+    height: calc(#{$input-height} - 2px);
+    right: 1px;
+    top: 1px;
+    z-index: 4;
+    border: none;
+    border-left-color: currentcolor;
+    border-left-style: none;
+    border-left-width: medium;
+    background-color: $white;
+    cursor: pointer;
+    box-shadow: none;
+    border-radius: 0 $border-radius $border-radius 0;
+}

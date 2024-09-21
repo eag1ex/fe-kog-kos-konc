@@ -1,0 +1,152 @@
+<h3 class="header">{{ "EXERCISE.HEADER" | translate }}</h3>
+<div class="card">
+    <div class="form-option">
+        <div class="search-filter-area">
+            <div class="form-search">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        [(ngModel)]="keyword"
+                        class="form-control"
+                        placeholder="{{ 'EXERCISE.TEXT_SEARCH' | translate }}"
+                        aria-label="Recipient's username"
+                        aria-describedby="basic-addon2"
+                        (keyup.enter)="searchExercise(true)"
+                    />
+                    <div class="input-group-append">
+                        <button class="btn" type="button" (click)="searchExercise(true)">
+                            <i class="fad fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="currentUser?.isAdmin" class="button-area">
+            <button class="btn btn-primary" [routerLink]="['/exercise', 'create']">
+                <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'id'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'id'"
+                    (click)="isSorting('id')"
+                >
+                    {{ "EXERCISE.ID" | translate }}
+                </th>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'name'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'name'"
+                    (click)="isSorting('name')"
+                >
+                    {{ "EXERCISE.NAME" | translate }}
+                </th>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'category'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'category'"
+                    (click)="isSorting('category')"
+                >
+                    {{ "EXERCISE.CATEGORY" | translate }}
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let exercise of exerciseList">
+                <td data-th="ID">{{ exercise.id }}</td>
+                <td data-th="Navn">{{ exercise.name }}</td>
+                <td data-th="Category">{{ exercise.category }}</td>
+                <td class="button-area">
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-primary"
+                        [routerLink]="['/exercise', exercise.uid, 'detail']"
+                    >
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-danger"
+                        (click)="dangerModal.show(); setExerciseId(exercise.uid)"
+                    >
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'EXERCISE.NO_RESULT'"></span>
+    </div>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'EXERCISE.EMPTY_LIST'"></span>
+    </div>
+    <div *ngIf="total">
+        <pagination
+            [boundaryLinks]="true"
+            [totalItems]="total"
+            [(ngModel)]="currentPage"
+            [customFirstTemplate]="firstTemplate"
+            [customLastTemplate]="lastTemplate"
+            [customPreviousTemplate]="prevTemplate"
+            [customNextTemplate]="nextTemplate"
+            (pageChanged)="pageChanged($event)"
+        >
+        </pagination>
+    </div>
+
+    <ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-right"></i>
+    </ng-template>
+    <ng-template #lastTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-right"></i>
+    </ng-template>
+    <ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-left"></i>
+    </ng-template>
+    <ng-template #firstTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-left"></i>
+    </ng-template>
+</div>
+
+<!--Delete modal-->
+<div
+    bsModal
+    #dangerModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerModal.hide(); deleteExercise()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

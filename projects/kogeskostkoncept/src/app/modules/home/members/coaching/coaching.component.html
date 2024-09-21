@@ -1,0 +1,190 @@
+<div class="card">
+    <div class="form-option">
+        <div class="button-area">
+            <button class="btn btn-primary" (click)="addModal()">
+                <i class="fad fa-plus"></i>{{ "NOTE.NEW" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting"
+                    [class.asc]="!paging.IsSorted && paging.Field == 'note_date'"
+                    [class.desc]="paging.IsSorted && paging.Field == 'note_date'"
+                    (click)="isSorting('note_date')"
+                >
+                    {{ "NOTE.COACHING.NOTE_DATE" | translate }}
+                </th>
+                <th>{{ "NOTE.COACHING.WEIGHT_GOAL" | translate }}</th>
+                <th>{{ "NOTE.COACHING.CHANGES" | translate }}</th>
+                <th>{{ "NOTE.COACHING.STAFF" | translate }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let coaching of coachingList">
+                <td data-th="note_date">{{ coaching.note_date | date : fullDateFormat : undefined : "da-DK" }}</td>
+                <td data-th="weight_goal" style="white-space: pre-wrap" [innerHTML]="coaching.weight_goal"></td>
+                <td data-th="changes" style="white-space: pre-wrap" [innerHTML]="coaching.changes"></td>
+                <td data-th="staff" style="white-space: pre-wrap" [innerHTML]="coaching.staff"></td>
+                <td class="button-area">
+                    <button class="btn btn-outline-primary" (click)="editModal(coaching); setIdCoaching(coaching.id)">
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button
+                        class="btn btn-outline-danger"
+                        (click)="deleteCoachingModal.show(); setIdCoaching(coaching.id)"
+                    >
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'NOTE.NO_RESULT'"></span>
+    </div>
+    <pagination
+        [boundaryLinks]="true"
+        [totalItems]="total"
+        [customFirstTemplate]="firstTemplate"
+        [customLastTemplate]="lastTemplate"
+        [customPreviousTemplate]="prevTemplate"
+        [customNextTemplate]="nextTemplate"
+        (pageChanged)="pageChanged($event)"
+    >
+    </pagination>
+    <ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-right"></i>
+    </ng-template>
+    <ng-template #lastTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-right"></i>
+    </ng-template>
+    <ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-left"></i>
+    </ng-template>
+    <ng-template #firstTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-left"></i>
+    </ng-template>
+</div>
+
+<!--create modal-->
+<form [formGroup]="coachingDetailForm">
+    <div
+        bsModal
+        #coachingModal="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">{{ coachingTitle }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "NOTE.COACHING.NOTE_DATE" | translate }}</label>
+                        <div class="short">
+                            <input
+                                type="text"
+                                placeholder="{{ 'NOTE.NOTE_DATE_PLACEHOLDER' | translate }}"
+                                class="form-control date-picker"
+                                formControlName="note_date"
+                                value="{{ coachingModel?.note_date | date : dateFormat }}"
+                                bsDatepicker
+                                [ngModel]="dateValueNow"
+                                [bsConfig]="{
+                  isAnimated: true,
+                  showClearButton: false,
+                  clearPosition: 'right',
+                  dateInputFormat: datePickerFormat
+                }"
+                                readonly
+                            />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "NOTE.COACHING.WEIGHT_GOAL" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                formControlName="weight_goal"
+                                style="min-height: 100px"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "NOTE.COACHING.CHANGES" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                formControlName="changes"
+                                style="min-height: 100px"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "NOTE.COACHING.STAFF" | translate }}</label>
+                        <div>
+                            <textarea class="form-control" formControlName="staff" style="min-height: 100px"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="coachingModal.hide()">
+                        {{ "FORM.CANCEL" | translate }}
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        (click)="onSubmitCoaching()"
+                        (keyup.enter)="onSubmitCoaching()"
+                    >
+                        {{ "FORM.SAVE" | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!--Delete modal-->
+<div
+    bsModal
+    #deleteCoachingModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="deleteCoachingModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="deleteCoachingModal.hide(); deleteCoaching()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

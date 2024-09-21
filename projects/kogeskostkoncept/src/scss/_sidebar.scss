@@ -1,0 +1,24 @@
+.sidebar {
+    .nav-link {
+        &.active {
+            background: $primary;
+
+            .nav-icon {
+                color: $white;
+            }
+        }
+
+        .badge {
+            margin-top: 3px;
+            min-width: 18px;
+            height: 18px;
+            line-height: 0.85;
+        }
+    }
+
+    .nav-dropdown-items {
+        .nav-link {
+            padding-left: 30px;
+        }
+    }
+}

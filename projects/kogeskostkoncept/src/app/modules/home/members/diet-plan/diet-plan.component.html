@@ -1,0 +1,854 @@
+<div class="card">
+    <app-diet-daily-plan></app-diet-daily-plan>
+    <form>
+        <div class="form-edit">
+            <div class="form-option">
+                <h4 class="header">{{ "DIET_PLAN_MEAL.HEAD" | translate }}</h4>
+                <div class="button-area">
+                    <button
+                        class="btn btn-outline-primary"
+                        (click)="openModalDuplicateDietPlan()"
+                        *ngIf="hasMealResult"
+                    >
+                        <i class="fad fa-copy"></i>{{ "LIST.DUPLICATION" | translate }}
+                    </button>
+                    <button
+                        class="btn btn-outline-primary"
+                        (click)="goToDownloadPage('/diet-plan-pdf/' + id)"
+                        *ngIf="hasMealResult"
+                    >
+                        <i class="fad fa-file-download"></i>{{ "LIST.PDF" | translate }}
+                    </button>
+                    <button class="btn btn-primary" (click)="buttonNewMeal()" *ngIf="isLockDietPlan">
+                        <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+                    </button>
+                </div>
+            </div>
+            <!-- card-Gray all-->
+            <div dragula="DIET_PLAN" [dragulaModel]="mealFoodList" (dragulaModelChange)="onDropCard($event)">
+                <div *ngFor="let mealFood of mealFoodList">
+                    <div [ngClass]="isLockDietPlan ? 'dragabled' : ''" *ngIf="hasMealResult">
+                        <!-- card-Gray -->
+                        <div class="card-collasps">
+                            <!-- dropdownMenu of card-Gray -->
+                            <div class="card-collasps-header">
+                                <button
+                                    type="button"
+                                    class="btn btn-collasps"
+                                    (click)="
+                    setCollapse(mealFood.uid, !collapseState[mealFood.uid])
+                  "
+                                    [class.collasped]="collapseState[mealFood.uid]"
+                                    [attr.aria-expanded]="collapseState[mealFood.uid]"
+                                    aria-controls="collapseBasic"
+                                >
+                                    {{ mealFood.name }}
+                                </button>
+                                <div class="show-color">
+                                    <div
+                                        class="color-selected"
+                                        [ngClass]="colorCssClass[mealFood.meal_header_color]"
+                                    ></div>
+                                </div>
+                                <div class="btn-group" dropdown placement="bottom right" *ngIf="isLockDietPlan">
+                                    <button
+                                        id="button-animated"
+                                        dropdownToggle
+                                        type="button"
+                                        class="btn btn-link dropdown-toggle"
+                                        aria-controls="dropdown-animated"
+                                    >
+                                        <i class="fad fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul
+                                        id="dropdown-animated"
+                                        *dropdownMenu
+                                        class="dropdown-menu dropdown-menu-right"
+                                        role="menu"
+                                        aria-labelledby="button-animated"
+                                    >
+                                        <li role="menuitem">
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                (click)="buttonNewFood(mealFood.uid, $event)"
+                                                ><i class="fad fa-plus"></i>{{ "DIET_PLAN_FOOD.NEW_FOOD" | translate
+                                                }}</a
+                                            >
+                                        </li>
+                                        <li role="menuitem">
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                (click)="buttonUpdateMeal(mealFood.uid, $event)"
+                                                ><i class="fad fa-pencil"></i>{{ "DIET_PLAN_MEAL.EDIT" | translate }}</a
+                                            >
+                                        </li>
+                                        <li role="menuitem">
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                (click)="
+                          dangerMealModal.show();
+                          buttonDeleteMeal(mealFood.uid, $event)
+                        "
+                                                ><i class="fad fa-trash"></i>{{ "DIET_PLAN_MEAL.DELETE" | translate
+                                                }}</a
+                                            >
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <!-- card-white all -->
+                            <div
+                                id="collapseBasic"
+                                class="card-body"
+                                [collapse]="collapseState[mealFood.uid]"
+                                [isAnimated]="true"
+                            >
+                                <!-- card-white -->
+                                <div class="card-item" *ngFor="let mealFoodDetail of mealFood.dietPlanfood">
+                                    <!-- dropdownMenu of card-white -->
+                                    <div class="btn-group" dropdown placement="bottom right" *ngIf="isLockDietPlan">
+                                        <button
+                                            id="button-animated"
+                                            dropdownToggle
+                                            type="button"
+                                            class="btn btn-link dropdown-toggle"
+                                            aria-controls="dropdown-animated"
+                                        >
+                                            <i class="fad fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul
+                                            id="dropdown-animated"
+                                            *dropdownMenu
+                                            class="dropdown-menu dropdown-menu-right"
+                                            role="menu"
+                                            aria-labelledby="button-animated"
+                                        >
+                                            <li class="disabled" role="menuitem">
+                                                <a
+                                                    href="#"
+                                                    class="dropdown-item disabled"
+                                                    [class.disabled]="mealFoodDetail.is_food_deleted"
+                                                    (click)="buttonUpdateFood(mealFoodDetail, $event)"
+                                                    ><i class="fad fa-pencil"></i>{{ "DIET_PLAN_FOOD.EDIT" | translate
+                                                    }}</a
+                                                >
+                                            </li>
+                                            <li role="menuitem">
+                                                <a
+                                                    class="dropdown-item"
+                                                    href="#"
+                                                    (click)="
+                            dangerFoodModal.show();
+                            buttonDeleteFood(
+                              mealFood.uid,
+                              mealFoodDetail.uid,
+                              $event
+                            )
+                          "
+                                                    ><i class="fad fa-trash"></i>{{ "DIET_PLAN_FOOD.DELETE" | translate
+                                                    }}</a
+                                                >
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <img src="{{ mealFoodDetail.imageUrl }}" (error)="setNoImage($event)" />
+
+                                    <div class="card-item-info">
+                                        <div class="recent-link pb-0">
+                                            <div class="mytooltip">
+                                                <h5>{{ mealFoodDetail.name }}</h5>
+                                                <div class="mytext" *ngIf="mealFoodDetail?.is_foodData">
+                                                    <div class="mytooltip-wrapper">
+                                                        <div
+                                                            *ngIf="mealFoodDetail?.food_data?.alternative_food?.length > 0"
+                                                        >
+                                                            <div class="topic">
+                                                                {{ "DIET_PLAN_FOOD.ALTERNATIVES" | translate }}
+                                                            </div>
+                                                            <ul class="tooltip-text">
+                                                                <li
+                                                                    class="stats-text"
+                                                                    *ngFor="let alternative of mealFoodDetail?.food_data?.alternative_food"
+                                                                >
+                                                                    {{ alternative.name }}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+
+                                                        <div
+                                                            *ngIf="mealFoodDetail?.food_data?.recipes_food?.length > 0"
+                                                        >
+                                                            <div class="topic">
+                                                                {{ "DIET_PLAN_FOOD.RECIPES" | translate }}
+                                                            </div>
+                                                            <ul class="tooltip-text">
+                                                                <li
+                                                                    class="stats-text"
+                                                                    *ngFor="let recipe of mealFoodDetail?.food_data?.recipes_food"
+                                                                >
+                                                                    {{ recipe.name }}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+
+                                                        <div *ngIf="mealFoodDetail?.food_data?.vegan_food?.length > 0">
+                                                            <div class="topic">
+                                                                {{ "DIET_PLAN_FOOD.VEGAN" | translate }}
+                                                            </div>
+                                                            <ul class="tooltip-text">
+                                                                <li
+                                                                    class="stats-text"
+                                                                    *ngFor="let vegan of mealFoodDetail?.food_data?.vegan_food"
+                                                                >
+                                                                    {{ vegan.name }}
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <span class="mytext mytext-bold" *ngIf="!mealFoodDetail?.is_foodData"
+                                                    >{{ "DIET_PLAN_MEAL.NO_AFI_ASSIGNED" | translate }}</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <span class="notranslate"
+                                            >({{ mealFoodDetail.amount }} {{ mealFoodDetail.unit }})</span
+                                        >
+                                        <div>
+                                            <i *ngIf="mealFoodDetail.is_food_deleted"
+                                                >{{ "DIET_PLAN_FOOD.NO_MASTER_DATA" | translate }}</i
+                                            >
+                                        </div>
+                                        <p>
+                                            <b>{{ "DIET_PLAN_MEAL.NOTE" | translate }} </b>
+                                            {{ mealFoodDetail.note }}
+                                        </p>
+                                        <span>{{ "DIET_PLAN.NUTRITION" | translate }}</span>
+                                        <span
+                                            ><b>{{ "FOODS.LIST_KCAL" | translate }}:</b> {{ mealFoodDetail.kcal }}</span
+                                        >
+                                        <span
+                                            ><b>{{ "FOODS.LIST_CARBS" | translate }}:</b>{{ mealFoodDetail.carbs
+                                            }}</span
+                                        >
+                                        <span
+                                            ><b>{{ "FOODS.LIST_PROTEIN" | translate }}:</b>{{ mealFoodDetail.protein
+                                            }}</span
+                                        >
+                                        <span><b>{{ "FOODS.LIST_FAT" | translate }}:</b>{{ mealFoodDetail.fat }}</span>
+                                        <span
+                                            ><b>{{ "FOODS.LIST_KOST" | translate }}:</b>{{ mealFoodDetail.fiber }}</span
+                                        >
+                                    </div>
+                                </div>
+                                <div class="table-no-data" *ngIf="mealFood.dietPlanfood <= 0">
+                                    <span [translate]="'DIET_PLAN_FOOD.NO_RESULT_FOOD'"></span>
+                                </div>
+                                <div *ngIf="mealFood.note">
+                                    <b>{{ "DIET_PLAN_MEAL.NOTE" | translate }} </b>
+                                    <p style="white-space: pre-wrap">{{ mealFood.note }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-no-data" *ngIf="!hasMealResult">
+                <span [translate]="'DIET_PLAN_FOOD.NO_RESULT_MEAL'"></span>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- add Meal Modal -->
+<form (ngSubmit)="onSubmitMeal()" [formGroup]="mealFoodForm">
+    <div
+        bsModal
+        #addMeal="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" *ngIf="idMeal == null">{{ "DIET_PLAN_MEAL.NEW_MEAL" | translate }}</h4>
+                    <h4 class="modal-title" *ngIf="idMeal != null">{{ "DIET_PLAN_MEAL.EDIT_MEAL" | translate }}</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="addMeal.hide()">
+                        <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required-form">
+                        <label for="exampleInput1">{{ "DIET_PLAN_MEAL.NAME" | translate }}</label>
+                        <div>
+                            <input
+                                type="text"
+                                class="form-control"
+                                [ngClass]="{
+                  'is-invalid':
+                    f.name.touched && (f.name.errors || f.name.errors?.required)
+                }"
+                                id="name"
+                                name="name"
+                                formControlName="name"
+                            />
+                            <div *ngIf="f.name.touched" class="invalid-feedback">
+                                <app-control-messages [control]="mealFoodForm.get('name')"> </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "DIET_PLAN_MEAL.HEADING_COLOR" | translate }}</label>
+                        <div>
+                            <div class="custom-control custom-radio">
+                                <input
+                                    class="custom-control-input"
+                                    id="customRadioDisabled"
+                                    value="green"
+                                    formControlName="headingColor"
+                                    type="radio"
+                                />
+                                <label class="custom-control-label" for="customRadioDisabled"
+                                    >{{ "DIET_PLAN_MEAL.COLOR_GREEN" | translate }}</label
+                                >
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input
+                                    class="custom-control-input"
+                                    id="customRadioDisabled2"
+                                    value="blue"
+                                    formControlName="headingColor"
+                                    type="radio"
+                                />
+                                <label class="custom-control-label" for="customRadioDisabled2"
+                                    >{{ "DIET_PLAN_MEAL.COLOR_BLUE" | translate }}</label
+                                >
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input
+                                    class="custom-control-input"
+                                    id="customRadioDisabled3"
+                                    value="red"
+                                    formControlName="headingColor"
+                                    type="radio"
+                                />
+                                <label class="custom-control-label" for="customRadioDisabled3"
+                                    >{{ "DIET_PLAN_MEAL.COLOR_RED" | translate }}</label
+                                >
+                            </div>
+                            <div class="custom-control custom-radio">
+                                <input
+                                    class="custom-control-input"
+                                    id="customRadioDisabled4"
+                                    value="yellow"
+                                    formControlName="headingColor"
+                                    type="radio"
+                                />
+                                <label class="custom-control-label" for="customRadioDisabled4"
+                                    >{{ "DIET_PLAN_MEAL.COLOR_YELLOW" | translate }}</label
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "DIET_PLAN_MEAL.NOTE" | translate }}</label>
+                        <div>
+                            <textarea class="form-control" id="note" name="note" formControlName="note"> </textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="addMeal.hide()">
+                        {{ "FORM.CANCEL" | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- add Food Modal -->
+<form (ngSubmit)="onSubmitFood(false)" [formGroup]="FoodForm">
+    <div
+        bsModal
+        #addFood="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" *ngIf="idFood == null">{{ "DIET_PLAN_FOOD.NEW_FOOD" | translate }}</h4>
+                    <h4 class="modal-title" *ngIf="idFood != null">{{ "DIET_PLAN_FOOD.EDIT_FOOD" | translate }}</h4>
+                    <button type="button" class="close" aria-label="Close" (click)="addFood.hide()">
+                        <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group-row-inputs row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="inlineFormCustomSelect"
+                                    >{{ "DIET_PLAN_FOOD.FILTER_SEARCH" | translate }}</label
+                                >
+                                <div>
+                                    <angular2-multiselect
+                                        formControlName="filter"
+                                        [data]="dropdownFilterList"
+                                        [(ngModel)]="selectedFilters"
+                                        [settings]="dropdownFilterSettings"
+                                        (onSelect)="onFilterSelect()"
+                                        (onDeSelect)="onFilterDeSelect()"
+                                        (onDeSelectAll)="onFilterDeSelectAll()"
+                                        (onOpen)="onOpenFilter()"
+                                        (onClose)="onCloseFilter()"
+                                        #dropdownFilterRef
+                                    >
+                                    </angular2-multiselect>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="input1">{{ "DIET_PLAN_FOOD.MAX_KCAL" | translate }}</label>
+                                <div>
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        placeholder="Indtast kcal antal"
+                                        id="maxKcal"
+                                        name="maxKcal"
+                                        formControlName="maxKcal"
+                                        (keypress)="keyPressNumbers($event)"
+                                        onKeyPress="if(this.value.length==4) return false;"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ng-template #imgTooltip>
+                        <img [src]="hoverImage" />
+                    </ng-template>
+
+                    <div class="form-group required-form custom-dropdown">
+                        <div class="food-container">
+                            <div class="food-title d-flex">
+                                <label for="exampleInput3" class="label-complex text-nowrap mr-2"
+                                    >{{ "DIET_PLAN_FOOD.NAME" | translate }}
+                                </label>
+                                <div class="recent-link w-auto pb-0">
+                                    <div class="mytooltip">
+                                        <i class="fad fa-info-circle" *ngIf="cardFood.name"></i>
+                                        <div class="mytext small" *ngIf="isFoodDetailDropdown">
+                                            <div class="mytooltip-wrapper">
+                                                <div *ngIf="foodDetailDropdown?.alternative_food?.length > 0">
+                                                    <div class="topic">
+                                                        {{ "DIET_PLAN_FOOD.ALTERNATIVES" | translate }}
+                                                    </div>
+                                                    <ul class="tooltip-text">
+                                                        <li
+                                                            class="stats-text"
+                                                            *ngFor="let alternative of foodDetailDropdown?.alternative_food"
+                                                        >
+                                                            {{ alternative.name }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                <div *ngIf="foodDetailDropdown?.recipes_food?.length > 0">
+                                                    <div class="topic">{{ "DIET_PLAN_FOOD.RECIPES" | translate }}</div>
+                                                    <ul class="tooltip-text">
+                                                        <li
+                                                            class="stats-text"
+                                                            *ngFor="let alternative of foodDetailDropdown?.recipes_food"
+                                                        >
+                                                            {{ alternative.name }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                                <div *ngIf="foodDetailDropdown?.vegan_food?.length > 0">
+                                                    <div class="topic">{{ "DIET_PLAN_FOOD.VEGAN" | translate }}</div>
+                                                    <ul class="tooltip-text">
+                                                        <li
+                                                            class="stats-text"
+                                                            *ngFor="let alternative of foodDetailDropdown?.vegan_food"
+                                                        >
+                                                            {{ alternative.name }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <span
+                                            class="mytext-bold mytext small"
+                                            *ngIf="!isFoodDetailDropdown && cardFood.name"
+                                            >{{ "DIET_PLAN_MEAL.NO_AFI_ASSIGNED" | translate }}</span
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <angular2-multiselect
+                                #drop
+                                [data]="dropdownList"
+                                formControlName="foodName"
+                                [ngClass]="{
+                  'is-invalid':
+                    foodDetail.foodName.touched &&
+                    (foodDetail.foodName.errors ||
+                      foodDetail.foodName.errors?.required)
+                }"
+                                [settings]="dropdownSettings"
+                                (onOpen)="onOpen($event)"
+                                (onClose)="modelChanged($event)"
+                                (onSelect)="onSelect($event)"
+                                [(ngModel)]="selectedNameFood"
+                                (onDeSelectAll)="onDeSelectAll($event)"
+                                #dropdownFoodRef
+                            >
+                                <c-item>
+                                    <ng-template let-item="item">
+                                        <div class="row flex-nowrap w-100">
+                                            <div class="col dropdown-thumbnail-column">
+                                                <img
+                                                    [src]="item.imageUrl"
+                                                    (error)="setNoImage($event)"
+                                                    (mouseover)="mouseover(item.imageUrl)"
+                                                    class="dropdown-thumbnail"
+                                                    [tooltip]="imgTooltip"
+                                                    [placement]="'left'"
+                                                    container="body"
+                                                    boundary="window"
+                                                    containerClass="tooltip-dropdown-image"
+                                                />
+                                            </div>
+                                            <div class="col-5">{{ item.itemName }}</div>
+                                            <div class="col-3">{{ item.category }}</div>
+                                            <div class="col">{{ item.kcal }}</div>
+                                            <div class="col">{{ item.carbs }}</div>
+                                        </div>
+                                    </ng-template>
+                                </c-item>
+                            </angular2-multiselect>
+                            <div *ngIf="foodDetail.foodName.touched" class="invalid-feedback">
+                                <app-control-messages [control]="FoodForm.get('foodName')"> </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" *ngIf="foodNote !== ''">
+                        <label for="exampleInput3">{{ "DIET_PLAN_FOOD.FOOD_NOTE" | translate }}</label>
+                        <div>
+                            <textarea class="form-control" style="min-height: 100px" readonly>{{ foodNote }}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "DIET_PLAN_FOOD.NOTE" | translate }}</label>
+                        <div>
+                            <textarea class="form-control" id="note" name="note" formControlName="note"> </textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "DIET_PLAN_FOOD.INTERNAL_NOTE" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                id="internal_note"
+                                name="internal_note"
+                                formControlName="internal_note"
+                            >
+                            </textarea>
+                        </div>
+                    </div>
+                    <div class="form-group required-form">
+                        <label for="exampleInput3">{{ "DIET_PLAN_FOOD.AMOUNT" | translate }}</label>
+                        <div class="short">
+                            <div class="input-group">
+                                <input
+                                    #focusAmount
+                                    type="text"
+                                    class="form-control"
+                                    aria-label="0"
+                                    aria-describedby="basic-addon2"
+                                    [ngClass]="{
+                    'is-invalid':
+                      (foodDetail.amount.touched &&
+                        (foodDetail.amount.errors ||
+                          foodDetail.amount.errors?.required)) ||
+                      (foodDetail.unit.touched &&
+                        !foodDetail.amount.errors &&
+                        validateAltAmountUnit())
+                  }"
+                                    id="amount"
+                                    name="amount"
+                                    formControlName="amount"
+                                    value="{{ this.cardFood?.amount }}"
+                                />
+                                <div *ngIf="foodDetail.amount.touched" class="invalid-feedback">
+                                    <app-control-messages [control]="FoodForm.get('amount')"> </app-control-messages>
+                                </div>
+                                <div
+                                    *ngIf="
+                    foodDetail.unit.touched &&
+                    !foodDetail.amount.errors &&
+                    validateAltAmountUnit()
+                  "
+                                    class="invalid-feedback"
+                                >
+                                    {{ "DIET_PLAN_FOOD.VALIDATION.FOOD_UNIT" | translate }}
+                                </div>
+                                <select
+                                    class="custom-select"
+                                    id="inputGroupSelect01"
+                                    name="unit"
+                                    formControlName="unit"
+                                    [ngClass]="{
+                    'is-invalid':
+                      foodDetail.unit.touched &&
+                      (foodDetail.unit.errors ||
+                        foodDetail.unit.errors?.required)
+                  }"
+                                    [(ngModel)]="selectedUnit"
+                                >
+                                    <option
+                                        *ngFor="let unitItem of unit"
+                                        class="notranslate"
+                                        [hidden]="showAltAmountUnit(unitItem.id)"
+                                    >
+                                        {{ unitItem.value }}
+                                    </option>
+                                    <div *ngIf="foodDetail.unit.touched" class="invalid-feedback">
+                                        <app-control-messages [control]="FoodForm.get('unit')"> </app-control-messages>
+                                    </div>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="addFood.hide()">
+                        {{ "FORM.CANCEL" | translate }}
+                    </button>
+                    <button type="button" class="btn btn-primary" *ngIf="idFood == null" (click)="onSubmitFood(true)">
+                        {{ "FORM.SAVE_AND_CREATE_NEW" | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div
+    bsModal
+    #dangerMealModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerMealModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerMealModal.hide(); deleteMealFoodById()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    bsModal
+    #dangerFoodModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerFoodModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerFoodModal.hide(); deleteFood()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Duplicate Diet Plan -->
+<div
+    bsModal
+    #duplicateDietPlanModal="bs-modal"
+    class="modal fade"
+    tabindex="50"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ "DIET_PLAN_DUPLICATE_MODAL.DUPLICATE_PLAN" | translate }}</h4>
+                <button type="button" class="close" aria-label="Close" (click)="duplicateDietPlanModal.hide()">
+                    <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group required-form">
+                    <label for="exampleInput1">{{ "DIET_PLAN_DUPLICATE_MODAL.DUPLICATE_FROM" | translate }}</label>
+                    <span> {{ this.nameById }} </span>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInput3"></label>
+                    <div>
+                        <div class="drag-n-drop">
+                            <div class="drag-n-drop-warp">
+                                <div
+                                    class="drag-n-drop-area {{
+                    hasSelectMember ? '' : 'is-invalid'
+                  }}"
+                                >
+                                    <div class="drag-n-drop-header">
+                                        <div class="form-search">
+                                            <div class="input-group">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="search..."
+                                                    aria-label="Recipient's username"
+                                                    aria-describedby="basic-addon2"
+                                                    [(ngModel)]="keywordSearch"
+                                                    (ngModelChange)="searchMember()"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button class="btn" type="button" (click)="searchMember()">
+                                                        <i class="fad fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <perfect-scrollbar class="drag-n-drop-body">
+                                        <div
+                                            class="list-group drag-n-drop-body"
+                                            dragula="ITEMS"
+                                            [(dragulaModel)]="nameList"
+                                        >
+                                            <ng-container *ngFor="let member of nameList">
+                                                <div
+                                                    style="cursor: pointer"
+                                                    class="duplicateSelected list-group-item group-handle {{
+                            checkLockMember(member)
+                          }} {{ member.isSelected ? 'selected' : '' }}"
+                                                    [innerHtml]="member?.itemName"
+                                                    (click)="onclickMember(member.id)"
+                                                    [class.d-none]="!isInResult(member)"
+                                                ></div>
+                                            </ng-container>
+                                        </div>
+                                    </perfect-scrollbar>
+                                </div>
+                                <div class="invalid-feedback" *ngIf="!hasSelectMember">
+                                    {{ "DIET_PLAN.VALIDATION.DRAG_AND_DROP" | translate }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="duplicateDietPlanModal.hide()">
+                    {{ "FORM.CANCEL" | translate }}
+                </button>
+                <button type="submit" class="btn btn-primary" (click)="checkMemberHasDietPlan()">
+                    {{ "FORM.SAVE" | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div
+    bsModal
+    #ConfirmDuplicateModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+    styly="z-index:100000;"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'MODAL.TITLE_OVERWRITE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'MODAL.TEXT_OVERWRITE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="ConfirmDuplicateModal.hide()"
+                    [translate]="'MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="ConfirmDuplicateModal.hide(); duplicateDietPlanToMember()"
+                    [translate]="'MODAL.BUTTON_OVERWRITE'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

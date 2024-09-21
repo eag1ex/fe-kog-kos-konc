@@ -1,0 +1,127 @@
+<div class="card">
+    <div class="form-option">
+        <div class="search-filter-area">
+            <div class="form-filter">
+                <div class="input-group">
+                    <angular2-multiselect
+                        [data]="dropdownList"
+                        [(ngModel)]="selectedItems"
+                        [settings]="dropdownSettings"
+                        (onSelect)="onItemSelect($event)"
+                        (onDeSelect)="OnItemDeSelect($event)"
+                        (onSelectAll)="onSelectAll($event)"
+                        (onDeSelectAll)="onDeSelectAll($event)"
+                        (onOpen)="onOpen($event)"
+                        (onClose)="onClose($event)"
+                    >
+                    </angular2-multiselect>
+                </div>
+            </div>
+        </div>
+        <div class="button-area">
+            <button class="btn btn-primary" [routerLink]="['/push-notifications', 'create']">
+                <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting"
+                    [class.asc]="!paging.IsSorted && obj.field == 'next_schedule_date'"
+                    [class.desc]="paging.IsSorted && obj.field == 'next_schedule_date'"
+                    (click)="isSorting('next_schedule_date')"
+                >
+                    {{ "GENERAL_NOTIFICATION.HEAD_DAY" | translate }}
+                </th>
+                <th>{{ "GENERAL_NOTIFICATION.HEADING" | translate }}</th>
+                <th>{{ "GENERAL_NOTIFICATION.NOTIFICATION_TYPE" | translate }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let general of generalFilterList">
+                <td data-th="Date / Time">{{ general.date | date : fullDateTimeFormat : undefined : "da-DK" }}</td>
+                <td data-th="Heading">{{ general.heading }}</td>
+                <td data-th="Status">{{ getStatusText(general.status) }}</td>
+                <td class="button-area">
+                    <button class="btn btn-outline-primary" [routerLink]="['/push-notifications', general.id, 'edit']">
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button class="btn btn-outline-danger" (click)="dangerModal.show(); setNotificationId(general.id)">
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'GENERAL_NOTIFICATION.NO_RESULT'"></span>
+    </div>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'GENERAL_NOTIFICATION.EMPTY_LIST'"></span>
+    </div>
+
+    <ul class="pagination">
+        <li *ngIf="pageNumber > 0" class="pagination-prev page-item">
+            <a class="page-link" (click)="pagePrev()">
+                <i class="fad fa-angle-left"></i>
+            </a>
+        </li>
+        <li *ngIf="pageNumber <= 0" class="pagination-prev page-item disabled">
+            <a class="page-link" (click)="pagePrev()">
+                <i class="fad fa-angle-left"></i>
+            </a>
+        </li>
+        <li class="pagination-page page-item active">
+            <span class="page-link" href="">{{ pageNumber + 1 }}</span>
+        </li>
+        <li *ngIf="!setButtonNext()" class="pagination-next page-item">
+            <a class="page-link" (click)="pageNext()">
+                <i class="fad fa-angle-right"></i>
+            </a>
+        </li>
+        <li *ngIf="setButtonNext()" class="pagination-next page-item disabled">
+            <a class="page-link" (click)="pageNext()">
+                <i class="fad fa-angle-right"></i>
+            </a>
+        </li>
+    </ul>
+
+    <!--Delete modal-->
+    <div
+        bsModal
+        #dangerModal="bs-modal"
+        class="modal fade edit-modal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+                </div>
+                <div class="modal-body">
+                    <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        (click)="dangerModal.hide()"
+                        [translate]="'DELETE_MODAL.CANCEL'"
+                    ></button>
+                    <button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="dangerModal.hide(); deleteNotification()"
+                        [translate]="'DELETE_MODAL.CONFIRM'"
+                    ></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

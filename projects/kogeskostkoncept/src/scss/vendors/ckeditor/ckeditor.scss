@@ -1,0 +1,31 @@
+ckeditor {
+    height: auto !important;
+    padding: 0 !important;
+    overflow: hidden;
+    min-height: 76px !important;
+
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.ck-toolbar {
+    border-color: $border-color !important;
+    border-radius: $border-radius $border-radius 0 0 !important;
+}
+
+.ck-rounded-corners {
+    border-color: $border-color !important;
+    border-radius: 0 0 $border-radius $border-radius !important;
+}
+
+.memberPlanContainer {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: $black;
+    }
+}

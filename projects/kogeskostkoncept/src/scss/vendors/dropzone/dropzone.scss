@@ -1,0 +1,17 @@
+.custom-dropzone {
+    border-color: $border-color !important;
+    height: 253px !important;
+
+    &.show-img {
+        display: inline-flex !important;
+    }
+
+    ngx-dropzone-image-preview {
+        height: 250px !important;
+        margin: 0 !important;
+    }
+
+    ngx-dropzone-label {
+        display: none !important;
+    }
+}

@@ -1,0 +1,9 @@
+<div class="mobile-web-view">
+    <div class="mobile-web-view-wrapper" *ngIf="memberDetail">
+        <div class="res-content">
+            <div class="memberPlanContainer">
+                <p [innerHTML]="memberDetail?.information"></p>
+            </div>
+        </div>
+    </div>
+</div>

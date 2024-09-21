@@ -1,0 +1,40 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+## we have issue here ?
+
+npx --no-install commitlint --edit "$1";
+npx jira-prepare-commit-msg $1;
+
+## prefix some prettier issues quietly
+yarn husky:prefix
+
+# Check Prettier standards
+yarn husky:check-format ||
+(
+    echo '🤢🤮🤢🤮 Its NOT GOOD - Your styling needs improvement. 🤢🤮🤢🤮
+            Prettier Check Failed. Run yarn format, add changes and try commit again.';
+    exit 1;
+)
+
+# Check ESLint Standards
+yarn husky:check-lint ||
+(
+      echo '😤🏀👋😤 Fix it out of here! 😤🏀👋😤
+                ESLint Check Failed. Make the required changes listed above, add changes and try to commit again.';
+       exit 1;
+)
+
+# Check tsconfig standards
+# TODO types are not all validated yet!
+yarn husky:check-types ||
+(
+    echo '🤡😂❌🤡 Failed Type check. 🤡😂❌🤡
+            Are you seriously trying to write that? Make the changes required above.';
+    exit 1;
+)
+# cd /$(pwd)/kogeskostkoncep
+
+# If everything passes... Now we can commit
+echo '✅✅✅✅ You win this time... I am committing this now. ✅✅✅✅';
+# echo '👋👋!!! You can now test your build localy with: yarn serve 👋👋';

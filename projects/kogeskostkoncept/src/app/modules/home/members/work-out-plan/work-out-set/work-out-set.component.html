@@ -1,0 +1,974 @@
+<div class="form-edit">
+    <div class="form-option">
+        <h4 class="header">{{ "WORK_OUT_PLAN_DAY.NAME_OF_EXERCISE" | translate }}</h4>
+        <div class="button-area">
+            <button class="btn btn-outline-primary" (click)="workoutPlan()" *ngIf="hasPlanDayResult">
+                <i class="fad fa-copy"></i>{{ "LIST.DUPLICATION" | translate }}
+            </button>
+            <button
+                class="btn btn-outline-primary"
+                (click)="goToDownloadPage('/workout-plan-pdf/' + id)"
+                *ngIf="hasPlanDayResult"
+            >
+                <i class="fad fa-file-download"></i>{{ "LIST.PDF" | translate }}
+            </button>
+            <button class="btn btn-primary" (click)="buttonCreateDay()" *ngIf="isLockWorkoutPlan">
+                <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+            </button>
+        </div>
+    </div>
+    <div *ngIf="hasPlanDayResult">
+        <div class="card-collasps" *ngFor="let planDay of planDayList; let greyCardIndex = index">
+            <div class="card-collasps-header" id="{{ planDay.order }}">
+                <button
+                    type="button"
+                    class="btn btn-collasps"
+                    (click)="setCollapse(planDay.uid, !collapseState[planDay.uid])"
+                    [class.collasped]="collapseState[planDay.uid]"
+                    [attr.aria-expanded]="collapseState[planDay.uid]"
+                    aria-controls="collapseBasic"
+                >
+                    {{ planDay.name }}
+                </button>
+                <div class="button-area">
+                    <div *ngIf="isLockWorkoutPlan">
+                        <button
+                            class="btn btn-link"
+                            name="planDay.uid"
+                            id="planDay.uid"
+                            (click)="setLink()"
+                            *ngIf="isLinkGroup && planDay.uid === currentCard"
+                        >
+                            <i class="fad fa-link"></i>Link
+                        </button>
+                        <button
+                            class="btn btn-link"
+                            name="planDay.uid"
+                            id="planDay.uid"
+                            (click)="removeLink()"
+                            *ngIf="isSuperSet && planDay.uid === currentCard"
+                        >
+                            <i class="fad fa-unlink"></i>Unlink
+                        </button>
+                    </div>
+                </div>
+                <div class="btn-group" dropdown placement="bottom right" *ngIf="isLockWorkoutPlan">
+                    <button
+                        id="button-animated"
+                        dropdownToggle
+                        type="button"
+                        class="btn btn-link dropdown-toggle"
+                        aria-controls="dropdown-animated"
+                    >
+                        <i class="fad fa-ellipsis-v"></i>
+                    </button>
+                    <ul
+                        id="dropdown-animated"
+                        *dropdownMenu
+                        class="dropdown-menu dropdown-menu-right"
+                        role="menu"
+                        aria-labelledby="button-animated"
+                    >
+                        <li role="menuitem">
+                            <a class="dropdown-item" href="#" (click)="buttonNewExerciseDetail(planDay.uid, $event)"
+                                ><i class="fad fa-plus"></i>{{ "WORK_OUT_PLAN_DAY.ADD_BUTTON" | translate }}</a
+                            >
+                        </li>
+                        <li role="menuitem">
+                            <a class="dropdown-item" href="#" (click)="buttonNewExerciseDetailAbove(planDay, $event)"
+                                ><i class="fad fa-plus"></i>{{ "WORK_OUT_PLAN_DAY.ADD_ABOVE_BUTTON" | translate }}</a
+                            >
+                        </li>
+                        <li role="menuitem">
+                            <a class="dropdown-item" href="#" (click)="buttonEditPlanDay(planDay.uid, $event)"
+                                ><i class="fad fa-pencil"></i>{{ "WORK_OUT_PLAN_DAY.EDIT_BUTTON" | translate }}</a
+                            >
+                        </li>
+                        <li role="menuitem">
+                            <a
+                                class="dropdown-item"
+                                href="#"
+                                (click)="
+                  dangerGrayCard.show();
+                  buttonDeletePlanDay(planDay.uid, $event)
+                "
+                                ><i class="fad fa-trash"></i>{{ "WORK_OUT_PLAN_DAY.DELETE_BUTTON" | translate }}</a
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div id="collapseBasic" [collapse]="collapseState[planDay.uid]" [isAnimated]="true" class="card-body">
+                <div
+                    [dragula]="'WORKOUT_PLAN' + greyCardIndex"
+                    class="{{ validationSorting() }}"
+                    [dragulaModel]="planDay.WorkoutPlanSet"
+                    (dragulaModelChange)="onDropCard($event, planDay)"
+                >
+                    <div class="dragabled" *ngFor="let whiteCardGroup of planDay.WorkoutPlanSet">
+                        <div class="{{ setGroup(whiteCardGroup.isSuperSet) }}">
+                            <div class="card-item" *ngFor="let planExercise of whiteCardGroup.workoutPlanExercise">
+                                <div class="btn-group" dropdown placement="bottom right" *ngIf="isLockWorkoutPlan">
+                                    <button
+                                        id="button-animated"
+                                        dropdownToggle
+                                        type="button"
+                                        class="btn btn-link dropdown-toggle"
+                                        aria-controls="dropdown-animated"
+                                    >
+                                        <i class="fad fa-ellipsis-v"></i>
+                                    </button>
+                                    <ul
+                                        id="dropdown-animated"
+                                        *dropdownMenu
+                                        class="dropdown-menu dropdown-menu-right"
+                                        role="menu"
+                                        aria-labelledby="button-animated"
+                                    >
+                                        <li class="disabled" role="menuitem">
+                                            <a
+                                                href="#"
+                                                class="dropdown-item disabled"
+                                                [class.disabled]="planExercise.is_exercise_deleted"
+                                                (click)="
+                          buttonUpdateExercise(
+                            whiteCardGroup.uid,
+                            planExercise.uid,
+                            $event
+                          )
+                        "
+                                                ><i class="fad fa-pencil"></i> {{ "WORK_OUT_EXERCISE.EDIT_BUTTON" |
+                                                translate }}</a
+                                            >
+                                        </li>
+                                        <li role="menuitem">
+                                            <a
+                                                class="dropdown-item"
+                                                href="#"
+                                                (click)="
+                          dangerPlanExercise.show();
+                          buttonDeleteExercise(planExercise.uid, $event)
+                        "
+                                                ><i class="fad fa-trash"></i> {{ "WORK_OUT_EXERCISE.DELETE_BUTTON" |
+                                                translate }}</a
+                                            >
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <img src="{{ planExercise.imageUrl }}" (error)="setNoImage($event)" />
+                                <div class="card-item-info">
+                                    <h5>
+                                        {{ planExercise.name }} ({{ planExercise.category }}) {{
+                                        whiteCardGroup.size_superSet }}
+                                    </h5>
+                                    <div
+                                        *ngFor="
+                      let exerciseField of getExerciseFields(planExercise)
+                    "
+                                    >
+                                        <span *ngIf="exerciseField.field1?.type !== 'Empty'">
+                                            <b>{{ getTypeName(exerciseField.field1.type) }}:</b>
+                                            {{ getWorkoutFieldValue( exerciseField.field1.type,
+                                            exerciseField.field1.value ) }}
+                                        </span>
+                                        <span *ngIf="exerciseField.field2?.type !== 'Empty'">
+                                            <b>{{ getTypeName(exerciseField.field2.type) }}:</b>
+                                            {{ getWorkoutFieldValue( exerciseField.field2.type,
+                                            exerciseField.field2.value ) }}
+                                        </span>
+                                        <span *ngIf="exerciseField.field3?.type !== 'Empty'">
+                                            <b>{{ getTypeName(exerciseField.field3.type) }}:</b>
+                                            {{ getWorkoutFieldValue( exerciseField.field3.type,
+                                            exerciseField.field3.value ) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <i *ngIf="planExercise.is_exercise_deleted"
+                                            >{{ "WORK_OUT_EXERCISE.NO_MASTER_DATA" | translate }}</i
+                                        >
+                                    </div>
+                                    <p>
+                                        <b>{{ "WORK_OUT_EXERCISE.NOTE" | translate }}: </b>
+                                        {{ planExercise.note }}
+                                    </p>
+                                    <p>
+                                        <b>{{ "WORK_OUT_EXERCISE.BREAK" | translate }}: </b>
+                                        {{ planExercise.break }}
+                                    </p>
+                                    <p>
+                                        <b>{{ "WORK_OUT_EXERCISE.SETTING" | translate }}: </b>
+                                        {{ planExercise.setting }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div *ngIf="isLockWorkoutPlan">
+                                <div class="custom-control custom-checkbox" *ngIf="planDay.isShowCheckbox">
+                                    <input
+                                        type="checkbox"
+                                        class="custom-control-input"
+                                        [attr.id]="whiteCardGroup.uid"
+                                        (change)="
+                      checkboxChange(
+                        $event.target.checked,
+                        whiteCardGroup,
+                        planDay.uid
+                      )
+                    "
+                                        [attr.disabled]="
+                      currentCard && currentCard != planDay.uid ? '' : null
+                    "
+                                    />
+                                    <label class="custom-control-label" [attr.for]="whiteCardGroup.uid"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-no-data" *ngIf="planDay.WorkoutPlanSet <= 0">
+                        <span>{{ "WORK_OUT_PLAN_DAY.ON_RESULT" | translate }}</span>
+                    </div>
+                    <div *ngIf="planDay.note">
+                        <b>{{ "WORK_OUT_PLAN_DAY.NOTE" | translate }} </b>
+                        <p style="white-space: pre-wrap">{{ planDay.note }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-no-data" *ngIf="!hasPlanDayResult">
+        <span [translate]="'WORK_OUT_PLAN_DAY.ON_RESULT_DAY'"></span>
+    </div>
+</div>
+
+<!-- create new Plan Day Modal -->
+<form (ngSubmit)="onSubmitPlanDay()" [formGroup]="planDayForm">
+    <div
+        bsModal
+        #createNew="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        {{ planDayId == null ? ("WORK_OUT_PLAN_DAY_MODAL.ADD_HEAD" | translate) :
+                        ("WORK_OUT_PLAN_DAY_MODAL.EDIT_HEAD" | translate) }}
+                    </h4>
+                    <button type="button" class="close" aria-label="Close" (click)="createNew.hide()">
+                        <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required-form">
+                        <label for="exampleInput1">{{ "WORK_OUT_PLAN_DAY_MODAL.NAME_OF_DAY" | translate }}</label>
+                        <div>
+                            <input
+                                type="text"
+                                class="form-control"
+                                [ngClass]="{
+                  'is-invalid':
+                    planDayDetail.name.touched &&
+                    (planDayDetail.name.errors ||
+                      planDayDetail.name.errors?.required)
+                }"
+                                id="name"
+                                name="name"
+                                formControlName="name"
+                            />
+                            <div *ngIf="planDayDetail.name.touched" class="invalid-feedback">
+                                <app-control-messages [control]="planDayForm.get('name')"> </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput3">{{ "WORK_OUT_PLAN_DAY_MODAL.NOTE" | translate }}</label>
+                        <div>
+                            <textarea class="form-control" id="note" name="note" formControlName="note"> </textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="createNew.hide()">
+                        {{ "FORM.CANCEL" | translate }}
+                    </button>
+                    <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- create new grayDetail Modal -->
+<form (ngSubmit)="onSubmitExerciseDetail()" [formGroup]="planExerciseForm">
+    <div
+        bsModal
+        #PlanExercise="bs-modal"
+        class="modal fade"
+        tabindex="50"
+        role="dialog"
+        aria-labelledby="myModalLabel"
+        aria-hidden="true"
+    >
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">
+                        {{ this.planExerciseId === null ? ("WORK_OUT_PLAN_DAY.HEAD_NEW" | translate) :
+                        ("WORK_OUT_PLAN_DAY.HEAD_EDIT" | translate) }}
+                    </h4>
+                    <button type="button" class="close" aria-label="Close" (click)="PlanExercise.hide()">
+                        <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group required-form">
+                        <label for="exampleInput3">{{ "WORK_OUT_PLAN_EXERCISE_MODAL.NAME" | translate }}</label>
+                        <div class="short">
+                            <angular2-multiselect
+                                [data]="exerciseNameList"
+                                formControlName="name"
+                                [ngClass]="{
+                  'is-invalid':
+                    planExerciseDetail.name.touched &&
+                    (planExerciseDetail.name.errors ||
+                      planExerciseDetail.name.errors?.required)
+                }"
+                                [settings]="exerciseNameDropdownSettings"
+                                [(ngModel)]="selectedName"
+                                (onClose)="modelChangedName()"
+                                (onSelect)="onExerciseSelect($event)"
+                                (onDeSelectAll)="onDeSelectName($event)"
+                            >
+                            </angular2-multiselect>
+                            <div *ngIf="planExerciseDetail.name.touched" class="invalid-feedback">
+                                <app-control-messages [control]="planExerciseForm.get('name')"> </app-control-messages>
+                            </div>
+                            <div *ngIf="exerciseNote !== ''">
+                                <b>{{ "WORK_OUT_PLAN_EXERCISE_MODAL.EXERCISE_NOTE" | translate }}</b>
+                                : {{ exerciseNote }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput1">{{ "WORK_OUT_PLAN_EXERCISE_MODAL.NOTE" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                [ngClass]="{
+                  'is-invalid':
+                    planExerciseDetail.note?.touched &&
+                    (planExerciseDetail.note.errors ||
+                      planExerciseDetail.note.errors?.required)
+                }"
+                                id="note"
+                                name="note"
+                                formControlName="note"
+                                value="{{ this.planExerciseModal?.note }}"
+                            >
+                            </textarea>
+                            <div *ngIf="planExerciseDetail.note.touched" class="invalid-feedback">
+                                <app-control-messages [control]="planExerciseForm.get('note')"> </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput1">{{ "WORK_OUT_PLAN_EXERCISE_MODAL.BREAK" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                [ngClass]="{
+                  'is-invalid':
+                    planExerciseDetail.break.touched &&
+                    (planExerciseDetail.break.errors ||
+                      planExerciseDetail.break.errors?.required)
+                }"
+                                id="break"
+                                name="break"
+                                formControlName="break"
+                            >
+                            </textarea>
+                            <div *ngIf="planExerciseDetail.break.touched" class="invalid-feedback">
+                                <app-control-messages [control]="planExerciseForm.get('break')"> </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput1">{{ "WORK_OUT_PLAN_EXERCISE_MODAL.SETTING" | translate }}</label>
+                        <div>
+                            <textarea
+                                class="form-control"
+                                [ngClass]="{
+                  'is-invalid':
+                    planExerciseDetail.setting?.touched &&
+                    (planExerciseDetail.setting.errors ||
+                      planExerciseDetail.setting.errors?.required)
+                }"
+                                id="setting"
+                                name="setting"
+                                formControlName="setting"
+                            >
+                            </textarea>
+                            <div *ngIf="planExerciseDetail.setting?.touched" class="invalid-feedback">
+                                <app-control-messages [control]="planExerciseForm.get('setting')">
+                                </app-control-messages>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-lg-4">
+                            <div class="form-group -stack">
+                                <div>
+                                    <angular2-multiselect
+                                        [data]="rowFieldsList"
+                                        formControlName="rowsField"
+                                        [(ngModel)]="selectedRowCount"
+                                        [settings]="dropdownSettings"
+                                        (onSelect)="onRowsFieldSelect($event)"
+                                        (onDeSelectAll)="onDeSelectAll()"
+                                    >
+                                    </angular2-multiselect>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngFor="let ticket of exerciseFields?.controls; let i = index" [formGroup]="ticket">
+                        <div class="row">
+                            <div class="col-12 col-lg-4">
+                                <div class="form-group required-form -stack">
+                                    <label>{{ "WORK_OUT_PLAN_EXERCISE_MODAL.FIELD1" | translate }}</label>
+                                    <angular2-multiselect
+                                        [data]="field1_2List"
+                                        [ngClass]="{
+                      'is-invalid': isRequired(1, i, 'type')
+                    }"
+                                        formControlName="field1Type"
+                                        [(ngModel)]="selectedField1[i]"
+                                        [settings]="dropdownSettings"
+                                        (onSelect)="onSelectField(1, i)"
+                                    >
+                                    </angular2-multiselect>
+                                    <div *ngIf="isRequired(1, i, 'type')" class="invalid-feedback">
+                                        <app-control-messages [control]="getFormControl(1, i, 'type')">
+                                        </app-control-messages>
+                                    </div>
+                                </div>
+                                <div class="form-group required-form">
+                                    <div
+                                        class="short"
+                                        *ngIf="
+                      getDynamicFormDef(selectedField1[i][0]?.id, 1, i) as sth
+                    "
+                                    >
+                                        <div class="input-group" [ngSwitch]="sth.type">
+                                            <ng-container *ngSwitchCase="'Empty'">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="empty"
+                                                    name="empty"
+                                                    disabled
+                                                />
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'number'">
+                                                <input
+                                                    type="number"
+                                                    class="form-control"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(1, i, 'value')
+                          }"
+                                                    formControlName="field1Value"
+                                                    [attr.disabled]="isCheckFieldMax(1, i) ? '' : null"
+                                                />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2"
+                                                        >{{ sth.unit }}</span
+                                                    >
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'time'">
+                                                <div>
+                                                    <ngx-duration-picker
+                                                        formControlName="field1Value"
+                                                        [(value)]="durationValue1[i]"
+                                                        [options]="durationConfig"
+                                                    >
+                                                    </ngx-duration-picker>
+                                                </div>
+                                                <div style="margin-left: 10px">
+                                                    {{ durationValue1[i] | duration }} {{ "WORK_OUT_PLAN_UNIT.TIME" |
+                                                    translate }}
+                                                </div>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="
+                          sth.type === 'level' ||
+                          sth.type === 'pulse' ||
+                          sth.type === 'rounds' ||
+                          sth.type === 'set'
+                        "
+                                            >
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    formControlName="field1Value"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(1, i, 'value')
+                          }"
+                                                />
+                                            </ng-container>
+                                            <div *ngIf="isRequired(1, i, 'value')" class="invalid-feedback">
+                                                <app-control-messages [control]="getFormControl(1, i, 'value')">
+                                                </app-control-messages>
+                                            </div>
+                                        </div>
+                                        <div
+                                            *ngIf="isShowMaxCheckbox(1, i)"
+                                            class="custom-control custom-checkbox mt-3"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                class="custom-control-input"
+                                                id="row{{ i + 1 }}field1Checkbox"
+                                                formControlName="field1Checkbox"
+                                                (click)="onCheckMaxCheckbox(1, i)"
+                                            />
+                                            <label class="custom-control-label" for="row{{ i + 1 }}field1Checkbox"
+                                                >{{ "WORK_OUT_PLAN_EXERCISE_MODAL.MAX_CHECK_BOX" | translate }}</label
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <div class="form-group required-form -stack">
+                                    <label>{{ "WORK_OUT_PLAN_EXERCISE_MODAL.FIELD2" | translate }}</label>
+                                    <angular2-multiselect
+                                        [data]="field1_2List"
+                                        [ngClass]="{
+                      'is-invalid': isRequired(2, i, 'type')
+                    }"
+                                        formControlName="field2Type"
+                                        [(ngModel)]="selectedField2[i]"
+                                        [settings]="dropdownSettings"
+                                        (onSelect)="onSelectField(2, i)"
+                                    >
+                                    </angular2-multiselect>
+                                    <div *ngIf="isRequired(2, i, 'type')" class="invalid-feedback">
+                                        <app-control-messages [control]="getFormControl(2, i, 'type')">
+                                        </app-control-messages>
+                                    </div>
+                                </div>
+                                <div class="form-group required-form">
+                                    <div
+                                        class="short"
+                                        *ngIf="
+                      getDynamicFormDef(selectedField2[i][0]?.id, 2, i) as sth
+                    "
+                                    >
+                                        <div class="input-group" [ngSwitch]="sth.type">
+                                            <ng-container *ngSwitchCase="'Empty'">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="empty"
+                                                    name="empty"
+                                                    disabled
+                                                />
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'number'">
+                                                <input
+                                                    type="number"
+                                                    class="form-control"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(2, i, 'value')
+                          }"
+                                                    formControlName="field2Value"
+                                                    [attr.disabled]="isCheckFieldMax(2, i) ? '' : null"
+                                                />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2"
+                                                        >{{ sth.unit }}</span
+                                                    >
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'time'">
+                                                <div>
+                                                    <ngx-duration-picker
+                                                        formControlName="field2Value"
+                                                        [(value)]="durationValue2[i]"
+                                                        [options]="durationConfig"
+                                                    >
+                                                    </ngx-duration-picker>
+                                                </div>
+                                                <div style="margin-left: 10px">
+                                                    {{ durationValue2[i] | duration }} {{ "WORK_OUT_PLAN_UNIT.TIME" |
+                                                    translate }}
+                                                </div>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="
+                          sth.type === 'level' ||
+                          sth.type === 'pulse' ||
+                          sth.type === 'rounds' ||
+                          sth.type === 'set'
+                        "
+                                            >
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    formControlName="field2Value"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(2, i, 'value')
+                          }"
+                                                />
+                                            </ng-container>
+                                            <div *ngIf="isRequired(2, i, 'value')" class="invalid-feedback">
+                                                <app-control-messages [control]="getFormControl(2, i, 'value')">
+                                                </app-control-messages>
+                                            </div>
+                                        </div>
+                                        <div
+                                            *ngIf="isShowMaxCheckbox(2, i)"
+                                            class="custom-control custom-checkbox mt-3"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                class="custom-control-input"
+                                                id="row{{ i + 1 }}field2Checkbox"
+                                                formControlName="field2Checkbox"
+                                                (click)="onCheckMaxCheckbox(2, i)"
+                                            />
+                                            <label class="custom-control-label" for="row{{ i + 1 }}field2Checkbox"
+                                                >{{ "WORK_OUT_PLAN_EXERCISE_MODAL.MAX_CHECK_BOX" | translate }}</label
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <div class="form-group required-form -stack">
+                                    <label>{{ "WORK_OUT_PLAN_EXERCISE_MODAL.FIELD3" | translate }}</label>
+                                    <angular2-multiselect
+                                        [data]="field3List"
+                                        [ngClass]="{
+                      'is-invalid': isRequired(3, i, 'type')
+                    }"
+                                        formControlName="field3Type"
+                                        [(ngModel)]="selectedField3[i]"
+                                        [settings]="dropdownSettings"
+                                        (onSelect)="onSelectField(3, i)"
+                                    >
+                                    </angular2-multiselect>
+                                    <div *ngIf="isRequired(3, i, 'type')" class="invalid-feedback">
+                                        <app-control-messages [control]="getFormControl(3, i, 'type')">
+                                        </app-control-messages>
+                                    </div>
+                                </div>
+                                <div class="form-group required-form">
+                                    <div
+                                        class="short"
+                                        *ngIf="
+                      getDynamicFormDef(selectedField3[i][0]?.id, 3, i) as sth
+                    "
+                                    >
+                                        <div class="input-group" [ngSwitch]="sth.type">
+                                            <ng-container *ngSwitchCase="'Empty'">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    id="empty"
+                                                    name="empty"
+                                                    disabled
+                                                />
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'number'">
+                                                <input
+                                                    type="number"
+                                                    class="form-control"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(3, i, 'value')
+                          }"
+                                                    formControlName="field3Value"
+                                                    [attr.disabled]="isCheckFieldMax(3, i) ? '' : null"
+                                                />
+                                                <div class="input-group-append">
+                                                    <span class="input-group-text" id="basic-addon2"
+                                                        >{{ sth.unit }}</span
+                                                    >
+                                                </div>
+                                            </ng-container>
+                                            <ng-container *ngSwitchCase="'time'">
+                                                <div>
+                                                    <ngx-duration-picker
+                                                        formControlName="field3Value"
+                                                        [(value)]="durationValue3[i]"
+                                                        [options]="durationConfig"
+                                                    >
+                                                    </ngx-duration-picker>
+                                                </div>
+                                                <div style="margin-left: 10px">
+                                                    {{ durationValue3[i] | duration }} {{ "WORK_OUT_PLAN_UNIT.TIME" |
+                                                    translate }}
+                                                </div>
+                                            </ng-container>
+                                            <ng-container
+                                                *ngIf="
+                          sth.type === 'level' ||
+                          sth.type === 'pulse' ||
+                          sth.type === 'rounds' ||
+                          sth.type === 'set'
+                        "
+                                            >
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    formControlName="field3Value"
+                                                    [ngClass]="{
+                            'is-invalid': isRequired(3, i, 'value')
+                          }"
+                                                />
+                                            </ng-container>
+                                            <div *ngIf="isRequired(3, i, 'value')" class="invalid-feedback">
+                                                <app-control-messages [control]="getFormControl(3, i, 'value')">
+                                                </app-control-messages>
+                                            </div>
+                                        </div>
+                                        <div
+                                            *ngIf="isShowMaxCheckbox(3, i)"
+                                            class="custom-control custom-checkbox mt-3"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                class="custom-control-input"
+                                                id="row{{ i + 1 }}field3Checkbox"
+                                                formControlName="field3Checkbox"
+                                                (click)="onCheckMaxCheckbox(3, i)"
+                                            />
+                                            <label class="custom-control-label" for="row{{ i + 1 }}field3Checkbox"
+                                                >{{ "WORK_OUT_PLAN_EXERCISE_MODAL.MAX_CHECK_BOX" | translate }}</label
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr *ngIf="i == 2" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" (click)="PlanExercise.hide()">
+                            {{ "FORM.CANCEL" | translate }}
+                        </button>
+                        <button type="submit" class="btn btn-primary">{{ "FORM.SAVE" | translate }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Delete Plan Day -->
+<div
+    bsModal
+    #dangerGrayCard="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerGrayCard.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerGrayCard.hide(); deletePlanDay()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Plan Exercise -->
+<div
+    bsModal
+    #dangerPlanExercise="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerPlanExercise.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerPlanExercise.hide(); deletePlanExercise()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Duplicate Workout Plan -->
+<div
+    bsModal
+    #duplicateWorkout="bs-modal"
+    class="modal fade"
+    tabindex="50"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{ "WORK_PLAN_DUPLICATE_MODAL.DUPLICATE_PLAN" | translate }}</h4>
+                <button type="button" class="close" aria-label="Close" (click)="duplicateWorkout.hide()">
+                    <span aria-hidden="true"><i class="fad fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="exampleInput1">{{ "WORK_PLAN_DUPLICATE_MODAL.DUPLICATE_FROM" | translate }}</label>
+                    <span> {{ this.nameById }} </span>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInput3"></label>
+                    <div>
+                        <div class="drag-n-drop">
+                            <div class="drag-n-drop-warp">
+                                <div
+                                    class="drag-n-drop-area {{
+                    hasSelectMember ? '' : 'is-invalid'
+                  }}"
+                                >
+                                    <div class="drag-n-drop-header">
+                                        <div class="form-search">
+                                            <div class="input-group">
+                                                <input
+                                                    type="text"
+                                                    class="form-control"
+                                                    placeholder="search..."
+                                                    aria-label="Recipient's username"
+                                                    aria-describedby="basic-addon2"
+                                                    [(ngModel)]="keywordSearch"
+                                                    (ngModelChange)="searchMember()"
+                                                />
+                                                <div class="input-group-append">
+                                                    <button class="btn" type="button" (click)="searchMember()">
+                                                        <i class="fad fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <perfect-scrollbar class="drag-n-drop-body">
+                                        <div
+                                            class="list-group drag-n-drop-body"
+                                            dragula="ITEMS"
+                                            [(dragulaModel)]="nameList"
+                                        >
+                                            <ng-container *ngFor="let member of nameList">
+                                                <div
+                                                    style="cursor: pointer"
+                                                    class="duplicateSelected list-group-item group-handle {{
+                            checkLockMember(member)
+                          }} {{ member.isSelected ? 'selected' : '' }}"
+                                                    [innerHtml]="member?.itemName"
+                                                    (click)="onClickMember(member.id)"
+                                                    [class.d-none]="!isInResult(member)"
+                                                ></div>
+                                            </ng-container>
+                                        </div>
+                                    </perfect-scrollbar>
+                                </div>
+                                <div class="invalid-feedback" *ngIf="!hasSelectMember">
+                                    {{ "DIET_PLAN.VALIDATION.DRAG_AND_DROP" | translate }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="duplicateWorkout.hide()">
+                    {{ "FORM.CANCEL" | translate }}
+                </button>
+                <button type="submit" class="btn btn-primary" (click)="checkMemberHasWorkoutPlan()">
+                    {{ "FORM.SAVE" | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Duplicate Modal -->
+<div
+    bsModal
+    #dangerDuplicateModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+    styly="z-index:100000;"
+>
+    <div class="modal-dialog modal-dialog-centered modal-warning" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'MODAL.TITLE_OVERWRITE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'MODAL.TEXT_OVERWRITE'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerDuplicateModal.hide()"
+                    [translate]="'MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-warning"
+                    (click)="dangerDuplicateModal.hide(); duplicateWorkoutPlanToMember()"
+                    [translate]="'MODAL.BUTTON_OVERWRITE'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

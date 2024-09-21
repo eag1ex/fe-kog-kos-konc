@@ -1,0 +1,6 @@
+<h3 class="header">{{ "PURCHASE_HISTORY.HEADER" | translate }}</h3>
+<tabset #staticTabs class="customer">
+    <tab id="tab_history" heading="{{ 'PURCHASE_HISTORY.HISTORY' | translate }}" (selectTab)="doThisOnSelect($event)">
+        <app-purchase-history></app-purchase-history>
+    </tab>
+</tabset>

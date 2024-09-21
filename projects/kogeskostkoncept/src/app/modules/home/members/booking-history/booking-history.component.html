@@ -1,0 +1,96 @@
+<div class="card calendar">
+    <div class="card-header">
+        <h3 class="header">{{ getMonthName() }} {{ latest_date | date : "yyyy" }}</h3>
+        <div class="button-area">
+            <button class="btn btn-outline-primary" (click)="backM()">
+                <i class="fad fa-chevron-left"></i>
+            </button>
+            <button class="btn btn-outline-primary" (click)="nextM()">
+                <i class="fad fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting no-warp"
+                    [class.asc]="
+            paging.TypeSort == 'asc' && paging.Field == 'appointment_date'
+          "
+                    [class.desc]="
+            paging.TypeSort == 'desc' && paging.Field == 'appointment_date'
+          "
+                    (click)="isSorting('appointment_date')"
+                >
+                    {{ "BOOKING_HISTORY.TABLE.APPOINTMENT_TIME" | translate }}
+                </th>
+                <th
+                    class="sorting no-warp"
+                    [class.asc]="
+            paging.TypeSort == 'asc' && paging.Field == 'created_date'
+          "
+                    [class.desc]="
+            paging.TypeSort == 'desc' && paging.Field == 'created_date'
+          "
+                    (click)="isSorting('created_date')"
+                >
+                    {{ "BOOKING_HISTORY.TABLE.CREATED_DATE" | translate }}
+                </th>
+                <th>{{ "BOOKING_HISTORY.TABLE.SERVICE" | translate }}</th>
+                <th>{{ "BOOKING_HISTORY.TABLE.COACH" | translate }}</th>
+                <th>{{ "BOOKING_HISTORY.TABLE.BOOK_BY" | translate }}</th>
+                <th>{{ "BOOKING_HISTORY.TABLE.STATUS" | translate }}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="!isEmpty">
+            <tr *ngFor="let bookingHistory of bookingList">
+                <td>{{ bookingHistory.appointment_date | date : fullDateTimeFormat : undefined : "da-DK" }}</td>
+                <td>{{ bookingHistory.created_date | date : fullDateTimeFormat : undefined : "da-DK" }}</td>
+                <td>{{ bookingHistory.service_name }}</td>
+                <td>{{ bookingHistory.coach_name }}</td>
+                <td>{{ bookingHistory.booked_by }}</td>
+                <td *ngIf="bookingHistory.is_deleteabled">
+                    {{ "BOOKING_HISTORY.TABLE.CANCEL_BY" | translate }}{{ bookingHistory.canceled_by }} <br />
+                    {{ bookingHistory.canceled_date | date : fullDateTimeFormat : undefined : "da-DK" }}
+                </td>
+                <td *ngIf="!bookingHistory.is_deleteabled">{{ "BOOKING_HISTORY.TABLE.ACTIVE" | translate }}</td>
+                <td class="button-area">
+                    <button
+                        *ngIf="!bookingHistory.is_deleteabled"
+                        class="btn btn-outline-info"
+                        (click)="
+              onButtonRemove(
+                bookingHistory.appointment_date,
+                bookingHistory.coach_id,
+                bookingHistory.uid
+              )
+            "
+                    >
+                        <i class="fad fa-eye"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'BOOKING_HISTORY.NO_RESULT'"></span>
+    </div>
+    <!-- <pagination [boundaryLinks]="true" [totalItems]="total" [itemsPerPage]="itemPerPage" [maxSize]="maxSize"
+    [customFirstTemplate]="firstTemplate" [customLastTemplate]="lastTemplate" [customPreviousTemplate]="prevTemplate"
+    [customNextTemplate]="nextTemplate" (pageChanged)="pageChanged($event)">
+  </pagination>
+  <ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="fad fa-angle-right"></i>
+  </ng-template>
+  <ng-template #lastTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="fad fa-angle-double-right"></i>
+  </ng-template>
+  <ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="fad fa-angle-left"></i>
+  </ng-template>
+  <ng-template #firstTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="fad fa-angle-double-left"></i>
+  </ng-template> -->
+</div>

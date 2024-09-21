@@ -1,0 +1,12 @@
+<h3 class="header">{{ model?.heading }}</h3>
+<i>{{ model?.sent_date | date : fullDateTimeFormat : undefined : "da-DK" }}</i>
+<div class="card">
+    <div class="form-group">
+        <div [innerHtml]="model?.message"></div>
+    </div>
+    <div class="form-group">
+        <div class="res-img" *ngIf="model?.picture?.url !== ''">
+            <img style="width: 100%" [src]="model?.picture?.url" />
+        </div>
+    </div>
+</div>

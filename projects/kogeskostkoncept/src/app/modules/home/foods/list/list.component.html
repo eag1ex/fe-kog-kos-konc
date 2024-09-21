@@ -1,0 +1,204 @@
+<h3 class="header">{{ "FOODS.HEAD_FOOD" | translate }}</h3>
+<div class="card">
+    <div class="form-option">
+        <div class="search-filter-area">
+            <div class="form-filter">
+                <div class="input-group">
+                    <angular2-multiselect
+                        [data]="dropdownCategoriesList"
+                        [(ngModel)]="selectedCategories"
+                        [settings]="dropdownCategoriesSettings"
+                        (onSelect)="onItemSelect($event)"
+                        (onDeSelect)="OnItemDeSelect($event)"
+                        (onSelectAll)="onSelectAll($event)"
+                        (onDeSelectAll)="onDeSelectAll($event)"
+                        (onOpen)="onOpen($event)"
+                        (onClose)="onClose($event)"
+                    >
+                    </angular2-multiselect>
+                </div>
+            </div>
+            <div class="form-search">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        [(ngModel)]="keyword"
+                        class="form-control"
+                        placeholder="{{ 'FOODS.TEXT_SEARCH' | translate }}"
+                        aria-label="Recipient's username"
+                        aria-describedby="basic-addon2"
+                        (keyup.enter)="searchFood()"
+                    />
+                    <div class="input-group-append">
+                        <button class="btn" type="button" (click)="searchFood()">
+                            <i class="fad fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="currentUser?.isAdmin" class="button-area">
+            <button class="btn btn-primary" [routerLink]="['/food', 'create']">
+                <i class="fad fa-plus"></i>{{ "LIST.BUTTON" | translate }}
+            </button>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'id'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'id'"
+                    (click)="isSorting('id')"
+                >
+                    {{ "FOODS.LIST_ID" | translate }}
+                </th>
+                <th class="text-right"></th>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'name'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'name'"
+                    (click)="isSorting('name')"
+                >
+                    {{ "FOODS.LIST_NAME" | translate }}
+                </th>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'category'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'category'"
+                    (click)="isSorting('category')"
+                >
+                    {{ "FOODS.LIST_CATEGORY" | translate }}
+                </th>
+                <th
+                    class="text-right sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'kcal'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'kcal'"
+                    (click)="isSorting('kcal')"
+                >
+                    {{ "FOODS.LIST_KCAL" | translate }}
+                </th>
+                <th class="text-right">{{ "FOODS.LIST_CARBS" | translate }}</th>
+                <th class="text-right">{{ "FOODS.LIST_PROTEIN" | translate }}</th>
+                <th class="text-right">{{ "FOODS.LIST_FAT" | translate }}</th>
+                <th class="text-right">{{ "FOODS.LIST_KOST" | translate }}</th>
+                <th
+                    class="sorting"
+                    [class.asc]="paging.IsSorted && paging.Field == 'energy'"
+                    [class.desc]="!paging.IsSorted && paging.Field == 'energy'"
+                    (click)="isSorting('energy')"
+                >
+                    {{ "FOODS.LIST_ENERGY" | translate }}
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="hasResult">
+            <tr *ngFor="let food of pagingCategoriesList">
+                <td data-th="ID">{{ food.id }}</td>
+                <td data-th="Image">
+                    <div class="thumbnail">
+                        <img src="{{ food.picture.url }}" alt="picture" (error)="setNoImage($event)" />
+                        <div class="thumbnail-full">
+                            <img src="{{ food.picture.url }}" alt="pictureFull" (error)="setNoImage($event)" />
+                        </div>
+                    </div>
+                </td>
+                <td data-th="Navn">{{ food.name }}</td>
+                <td data-th="Kategori">{{ food.category }}</td>
+                <td class="text-right" data-th="Kcal">{{ food.kcal }}</td>
+                <td class="text-right" data-th="Carbs">{{ food.carbs }}</td>
+                <td class="text-right" data-th="Protein">{{ food.protein }}</td>
+                <td class="text-right" data-th="Fat">{{ food.fat }}</td>
+                <td class="text-right" data-th="Kostifiber">{{ food.fiber }}</td>
+                <td class="text-left" data-th="Energy">{{ food.energy }}</td>
+                <td class="button-area">
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-primary"
+                        [routerLink]="['/food', food.uid, 'detail']"
+                    >
+                        <i class="fad fa-pencil"></i>
+                    </button>
+                    <button
+                        *ngIf="currentUser?.isAdmin"
+                        class="btn btn-outline-danger"
+                        (click)="dangerModal.show(); setFoodId(food.uid)"
+                    >
+                        <i class="fad fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="table-no-data" *ngIf="!hasResult">
+        <span [translate]="'FOODS.NO_RESULT'"></span>
+    </div>
+    <div class="table-no-data" *ngIf="isEmpty">
+        <span [translate]="'FOODS.EMPTY_LIST'"></span>
+    </div>
+    <div *ngIf="total > 0">
+        <pagination
+            [boundaryLinks]="true"
+            [totalItems]="total"
+            [(ngModel)]="currentPage"
+            [itemsPerPage]="itemPerPage"
+            [maxSize]="maxSize"
+            [customFirstTemplate]="firstTemplate"
+            [customLastTemplate]="lastTemplate"
+            [customPreviousTemplate]="prevTemplate"
+            [customNextTemplate]="nextTemplate"
+            (pageChanged)="pageChanged($event)"
+        >
+        </pagination>
+    </div>
+    <ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-right"></i>
+    </ng-template>
+    <ng-template #lastTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-right"></i>
+    </ng-template>
+    <ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-left"></i>
+    </ng-template>
+    <ng-template #firstTemplate let-disabled="disabled" let-currentPage="currentPage">
+        <i class="fad fa-angle-double-left"></i>
+    </ng-template>
+</div>
+
+<!--Delete modal-->
+<div
+    bsModal
+    #dangerModal="bs-modal"
+    class="modal fade edit-modal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="myModalLabel"
+    aria-hidden="true"
+>
+    <div class="modal-dialog modal-dialog-centered modal-danger" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" [translate]="'DELETE_MODAL.TITLE'"></div>
+            </div>
+            <div class="modal-body">
+                <p [translate]="'DELETE_MODAL.DESCRIPTION'"></p>
+            </div>
+            <div class="modal-footer">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    (click)="dangerModal.hide()"
+                    [translate]="'DELETE_MODAL.CANCEL'"
+                ></button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="dangerModal.hide(); deleteFood()"
+                    [translate]="'DELETE_MODAL.CONFIRM'"
+                ></button>
+            </div>
+        </div>
+    </div>
+</div>

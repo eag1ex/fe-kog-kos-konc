@@ -1,0 +1,23 @@
+<h3 class="header">{{ "BOOKING.SETTING.HEADER" | translate }}</h3>
+<tabset #staticTabs class="customer">
+    <tab
+        id="tab_main_setting"
+        heading="{{ 'BOOKING.SETTING.HEADER' | translate }}"
+        (selectTab)="doThisOnSelect($event)"
+    >
+        <app-main-setting *ngIf="this.staticTabs.tabs[0].active"></app-main-setting>
+    </tab>
+    <tab id="tab_coaches" heading="{{ 'BOOKING.COACH.HEADER' | translate }}" (selectTab)="doThisOnSelect($event)">
+        <app-coaches *ngIf="this.staticTabs.tabs[1].active"></app-coaches>
+    </tab>
+    <tab id="tab_services" heading="{{ 'BOOKING.SERVICE.HEADER' | translate }}" (selectTab)="doThisOnSelect($event)">
+        <app-service-list *ngIf="this.staticTabs.tabs[2].active"></app-service-list>
+    </tab>
+    <tab
+        id="tab_subscriptions"
+        heading="{{ 'BOOKING.SUBSCRIPTION.HEADER' | translate }}"
+        (selectTab)="doThisOnSelect($event)"
+    >
+        <app-subscription-list *ngIf="this.staticTabs.tabs[3].active"></app-subscription-list>
+    </tab>
+</tabset>

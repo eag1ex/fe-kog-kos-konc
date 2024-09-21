@@ -1,0 +1,185 @@
+diff a/kogeskostkoncept/src/app/modules/home/exercises/list/list.component.ts b/kogeskostkoncept/src/app/modules/home/exercises/list/list.component.ts	(rejected hunks)
+@@ -18,77 +18,151 @@
+   @ViewChild('dangerModal')
+   dangerModal: ModalDirective;
+   keyword = '';
+-  maxSize = 0;
+-  total = 0;
+-  itemPerPage = 0;
+   currentPage = 0;
+-  isAscSorted: boolean = true;
+   hasResult: boolean = true;
+   currentUser: IUserAuth;
+   paging: Paging;
+-  fieldSort: string;
+   uid: string;
+-  selectedItems = [];
+   exerciseList = [];
++  exerciseFilterList = [];
++  lastID: string;
++  obj: any;
+   private types: Array<ToastType> = ['success', 'danger', 'warning', 'info', 'primary', 'secondary', 'dark', 'light'];
+   isEmpty = true;
++  pageNumber: number = 0;
++  totalPage = 0;
+ 
+   constructor(
+     private translate: TranslateService,
+     private exercisesService: ExercisesService,
+     private toaster: Toaster,
+     private authService: AuthService,
+-    private defaultKeywordSearchService: DefaultKeywordSearchService
++    private excerciseRememberService: ExcerciseRememberService,
+   ) {
+     this.currentUser = this.authService.getCurrentUser();
+   }
+ 
+   ngOnInit() {
+     this.paging = new Paging();
+-    this.getDefaultKeywordSearch();
+-    this.maxSize = this.paging.MaxSizePage;
+-    this.itemPerPage = this.paging.PageSize;
+-    this.fieldSort = this.paging.Field;
++    this.paging.Field = 'id';
++    this.paging.TypeSort = TypeSort.ASC;
++    this.paging.IsSorted = true;
++
++    debugger
++    this.currentPage = this.excerciseRememberService.getCurrentPage() | 0;
++    const defaultKeyword = this.excerciseRememberService.getKeywordFilter();
++    if (defaultKeyword)
++      this.keyword = defaultKeyword[0];
++
++    this.setFilter();
++    this.getExerciseList();
++  }
++
++  setFilter() {
++    this.exerciseList = [];
++    this.exerciseFilterList = [];
++    this.lastID = '';
++
++    this.obj = {
++      pageNumber: 0,
++      pageSize: 10,
++      lastID: this.lastID,
++      field: this.paging.Field,
++    };
+   }
+ 
+   isSorting(field: string) {
+-    if (field === this.fieldSort) {
++    if (field === this.obj.field) {
+       this.paging.IsSorted = !this.paging.IsSorted;
+     } else {
+-      this.fieldSort = field;
+       this.paging.IsSorted = true;
+     }
++
++    this.paging.TypeSort = this.paging.IsSorted ? TypeSort.ASC : TypeSort.DESC;
++    this.setFilter();
+     this.paging.Field = field;
++    this.lastID = '';
+     this.getExerciseList();
+   }
+ 
+   getExerciseList() {
+-    this.exercisesService.getExerciseList(this.paging).subscribe((res) => {
+-      this.exerciseList = res.data.data;
+-      this.total = res.data.total;
+-      this.isEmpty = res.isEmpty;
+-      this.hasResult = this.exerciseList.length !== 0 ? true : false;
+-    })
++    this.exerciseFilterList = [];
++    this.obj = {
++      pageNumber: this.paging.PageNumber,
++      pageSize: this.paging.PageSize,
++      field: this.paging.Field,
++      keyword: this.keyword,
++      lastID: this.lastID,
++      sortType: this.paging.TypeSort,
++    };
++
++    this.exercisesService.getExerciseList(this.obj).subscribe((res) => {
++      debugger
++      this.exerciseList.push(res.data.data);
++
++      this.hasResult = this.exerciseList.length > 0;
++      this.pageNumber = res.data.pageNumber;
++      this.lastID = res.data.lastId;
++      this.isEmpty = res.data.isEmpty;;
++
++      this.exerciseFilterList = this.exerciseList[this.pageNumber];
++      if (!this.exerciseFilterList)
++        this.exerciseFilterList = [];
++
++      this.totalPage = ((this.exerciseList.length * this.paging.PageSize) / this.paging.PageSize) - 1;
++
++      if (this.paging.PageNumber < this.currentPage) {
++        this.paging.PageNumber = this.paging.PageNumber + 1;
++        this.getExerciseList();
++      }
++      this.setRemember(); 
++    }, (error) => {
++      console.log(error);
++    });
+   }
+ 
+   searchExercise() {
+-    this.currentPage = 0;
+-    this.total = 0;
+-    this.paging.PageNumber = 0;
+-    this.paging.TotalItem = 0;
+-    this.paging.Keyword = this.keyword;
+-    this.defaultKeywordSearchService.saveExerciseKeywordSearch(this.keyword);
++    this.setDefault();
+     this.getExerciseList();
+   }
++  
++  private setDefault()
++  {
++    this.exerciseList = [];
++    this.paging.PageNumber = 0;
++    this.currentPage = 0;
++    this.lastID = '';
++  }
+ 
+-  getDefaultKeywordSearch(){
+-    let filterData = this.defaultKeywordSearchService.getExerciseKeywordSearch();
+-    if (filterData != '' && filterData != undefined) {
+-      this.keyword = filterData;
+-      this.searchExercise();
+-    } else {
+-      this.getExerciseList();
++  pageNext(): void {
++    this.paging.PageNumber = this.paging.PageNumber + 1;
++
++    if (this.totalPage >= this.paging.PageNumber) {
++      this.getDataPage();
++      return;
+     }
++    this.getExerciseList();
++  }
++
++  pagePrev(): void {
++    this.paging.PageNumber = this.paging.PageNumber - 1;
++    if (this.paging.PageNumber <= 0)
++      this.paging.PageNumber = 0;
++
++    this.setRemember()
++    this.getDataPage();
++  }
++
++  getDataPage(): void {
++    this.setRemember(); 
++    this.exerciseFilterList = this.exerciseList[this.paging.PageNumber];
++    this.isEmpty = false;
++    this.hasResult = true;
++  }
++
++  private setRemember() {
++    this.excerciseRememberService.saveCurrentPage(this.paging.PageNumber);
++    this.excerciseRememberService.saveKeywordFilter(this.keyword);
+   }
+ 
+   deleteExercise() {

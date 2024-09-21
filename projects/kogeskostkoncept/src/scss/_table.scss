@@ -1,0 +1,319 @@
+.table {
+    @include margin-res-bottom;
+
+    thead {
+        box-shadow: $box-shadow;
+
+        th {
+            @include label;
+            border: 0;
+            background: $table-head-bg;
+
+            &.sorting {
+                &:hover {
+                    color: $primary;
+                    cursor: pointer;
+                }
+
+                &:after {
+                    margin-left: 7px;
+                    content: '';
+                    background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fad' data-icon='long-arrow-down' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512' class='svg-inline--fa fa-long-arrow-down fa-w-10 fa-3x'%3E%3Cg class='fa-group'%3E%3Cpath fill='currentColor' d='M124 351.93V56a24 24 0 0 1 24-24h24a24 24 0 0 1 24 24v295.93l-36 35.67z' class='fa-secondary'%3E%3C/path%3E%3Cpath fill='currentColor' d='M313 337.46L177.48 473l-.06.06a25.23 25.23 0 0 1-34.84 0l-.06-.06L7 337.46a24 24 0 0 1 0-33.94l17-17a24 24 0 0 1 33.94 0L160 387.6l102-101.08a24 24 0 0 1 33.94 0l17 17a24 24 0 0 1 .06 33.94z' class='fa-primary'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
+                    opacity: 0.6;
+                    background-repeat: no-repeat;
+                    display: inline-block;
+                    width: 10px;
+                    height: 16px;
+                    width: 10px;
+                    height: 14px;
+                    background-position-y: 0;
+                    vertical-align: middle;
+                }
+
+                &.desc {
+                    color: $primary;
+
+                    &:after {
+                        background-image: str-replace(
+                            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512' %3E%3Cg %3E%3Cpath fill='#{$primary}' d='M124 351.93V56a24 24 0 0 1 24-24h24a24 24 0 0 1 24 24v295.93l-36 35.67z' %3E%3C/path%3E%3Cpath fill='#{$primary}' d='M313 337.46L177.48 473l-.06.06a25.23 25.23 0 0 1-34.84 0l-.06-.06L7 337.46a24 24 0 0 1 0-33.94l17-17a24 24 0 0 1 33.94 0L160 387.6l102-101.08a24 24 0 0 1 33.94 0l17 17a24 24 0 0 1 .06 33.94z' %3E%3C/path%3E%3C/g%3E%3C/svg%3E"),
+                            '#',
+                            '%23'
+                        );
+                    }
+                }
+
+                &.asc {
+                    color: $primary;
+
+                    &:after {
+                        background-image: str-replace(
+                            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 320 512' %3E%3Cpath fill='#{$primary}' d='M58.427 225.456L124 159.882V456c0 13.255 10.745 24 24 24h24c13.255 0 24-10.745 24-24V159.882l65.573 65.574c9.373 9.373 24.569 9.373 33.941 0l16.971-16.971c9.373-9.373 9.373-24.569 0-33.941L176.971 39.029c-9.373-9.373-24.568-9.373-33.941 0L7.515 174.544c-9.373 9.373-9.373 24.569 0 33.941l16.971 16.971c9.372 9.373 24.568 9.373 33.941 0z' %3E%3C/path%3E%3C/svg%3E"),
+                            '#',
+                            '%23'
+                        );
+                    }
+                }
+            }
+
+            &.no-warp {
+                white-space: nowrap;
+            }
+        }
+    }
+
+    td {
+        border-top: 0;
+        padding: $table-cell-padding;
+        border-bottom: 1px solid $border-color;
+
+        p {
+            margin-bottom: 20px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .button-area {
+        text-align: right;
+        padding: 10px;
+        white-space: nowrap;
+
+        .btn {
+            margin-bottom: 0;
+            min-width: unset;
+            margin-left: 5px;
+
+            i {
+                margin-right: 0;
+            }
+        }
+    }
+}
+
+.form-option {
+    display: flex;
+    width: 100%;
+
+    .form-option-title {
+        flex: 1;
+        margin-bottom: 30px;
+        h4 {
+            margin-bottom: 15px;
+        }
+        > *:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .search-filter-area {
+        display: flex;
+        width: 100%;
+        margin-right: 30px;
+    }
+
+    .form-filter {
+        max-width: 300px;
+        width: 100%;
+        margin-right: 15px;
+    }
+
+    .form-search {
+        max-width: 300px;
+    }
+
+    .button-area {
+        margin-left: auto;
+        margin-top: 0;
+        text-align: right;
+
+        .btn {
+            min-width: 120px;
+
+            i {
+                margin-right: 7px;
+            }
+        }
+    }
+}
+
+.table-no-data {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 20px 10px 50px;
+    color: $gray-600;
+    font-size: $h4-font-size;
+}
+
+.table-horizontal-scroll {
+    overflow-x: auto;
+    @include margin-res-bottom;
+    .table {
+        width: auto;
+        min-width: 100%;
+        margin: 0;
+        th,
+        td {
+            &.nowrap {
+                white-space: nowrap;
+            }
+        }
+    }
+}
+
+.thumbnail {
+    position: relative;
+    display: inline-block;
+    padding-right: 10px;
+    &:hover {
+        .thumbnail-full {
+            display: block;
+        }
+    }
+    > img {
+        height: 45px;
+    }
+    .thumbnail-full {
+        position: absolute;
+        left: 100%;
+        top: -20%;
+        z-index: 9;
+        transform: translateY(-50%);
+        display: none;
+        img {
+            max-width: 370px;
+            max-height: 370px;
+            box-shadow: 0px 0px 2px 3px rgba($black, 0.1);
+        }
+    }
+}
+
+@include media-breakpoint-down($breakpoint-mobile-down) {
+    .form-option {
+        display: block;
+
+        .search-filter-area {
+            margin-right: 0;
+        }
+
+        .form-search {
+            max-width: unset;
+        }
+
+        .form-filter {
+            margin-right: 10px;
+            max-width: unset;
+        }
+
+        .button-area {
+            margin-bottom: 0;
+        }
+    }
+
+    .table {
+        display: block;
+
+        .text-right {
+            text-align: left !important;
+        }
+
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+            display: block;
+        }
+
+        td,
+        th {
+            &.text-right {
+                text-align: left !important;
+            }
+        }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead {
+            tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+        }
+
+        tr {
+            border: 1px solid #ccc;
+
+            td {
+                /* Behave  like a "row" */
+                border: none;
+                border-bottom: 1px solid $white;
+                position: relative;
+                padding: 8px 10px;
+                padding-left: 30%;
+                background-color: $gray-100;
+
+                &:before {
+                    /* Now like a table header */
+                    position: absolute;
+                    /* Top/left values mimic padding */
+                    top: 10px;
+                    left: 10px;
+                    width: 30%;
+                    padding-right: 10px;
+                    white-space: nowrap;
+                    content: attr(data-th) ' : ';
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    @include label;
+                }
+            }
+
+            &:nth-of-type(2n) {
+                td {
+                    border-bottom: 1px solid $gray-100;
+                    background-color: $white;
+                }
+            }
+        }
+
+        .button-area {
+            display: block;
+            padding: 0;
+            margin: 0;
+
+            &:before {
+                display: none;
+            }
+
+            .btn {
+                margin: 5px 10px 5px 0;
+            }
+        }
+    }
+
+    .table-horizontal-scroll {
+        overflow-x: hidden;
+
+        .table {
+            width: 100%;
+            th,
+            td {
+                &.nowrap {
+                    white-space: normal;
+                }
+            }
+        }
+    }
+
+    .thumbnail {
+        .thumbnail-full {
+            left: -100px;
+            top: calc(100% + 10px);
+            z-index: 9;
+            transform: none;
+        }
+    }
+}

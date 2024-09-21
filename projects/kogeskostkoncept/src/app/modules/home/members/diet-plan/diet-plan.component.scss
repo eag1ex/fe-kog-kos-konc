@@ -1,0 +1,38 @@
+.mytext {
+    &.small {
+        z-index: 5;
+        font-size: 14px;
+        left: 30px;
+        min-width: 297px;
+        &:before {
+            top: 6px;
+            left: -22px;
+        }
+        &:after {
+            top: 8px;
+            left: -26px;
+        }
+    }
+}
+
+.food-container {
+    display: flex;
+}
+
+.food-title {
+    padding-top: 8px;
+    padding-right: 15px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #000;
+}
+
+.mytooltip .fa-info-circle {
+    &:before {
+        color: #000000;
+    }
+    &:after {
+        color: #fed22b;
+        opacity: 0.8;
+    }
+}
