@@ -8,6 +8,10 @@ kog-kos-konc/.firebase/hosting.ZGlzdFxrb2dlc2tvc3Rrb25jZXB0.cache
 *.json
 *.env*
 *.env
+*.pdf
+*.scss
+*.html
+
 
 # compiled output
 /dist

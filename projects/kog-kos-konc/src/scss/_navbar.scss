@@ -1,9 +1,0 @@
-@include media-breakpoint-down($breakpoint-mobile-down) {
-    .navbar-nav {
-        .nav-link {
-            .user-name {
-                display: none;
-            }
-        }
-    }
-}
