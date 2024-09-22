@@ -1,9 +1,9 @@
 {
     "projects": {
-        "default": "kkk-dev",
-        "local": "kkk-dev",
-        "dev": "kkk-dev",
-        "staging": "koges-kost-koncept-test",
+        "default": "kog-kos-konc-dev",
+        "local": "kog-kos-konc-dev",
+        "dev": "kog-kos-konc-dev",
+        "staging": "kog-kos-konc-test",
         "prod": "koeges-kost-koncept"
     }
 }

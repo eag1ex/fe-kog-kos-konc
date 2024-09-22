@@ -12245,9 +12245,9 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"kkk-frontend@workspace:.":
+"fe-kog-kos-konc-frontend@workspace:.":
   version: 0.0.0-use.local
-  resolution: "kkk-frontend@workspace:."
+  resolution: "fe-kog-kos-konc-frontend@workspace:."
   dependencies:
     "@angular-devkit/build-angular": ~0.802.2
     "@angular-eslint/builder": 1.2.0

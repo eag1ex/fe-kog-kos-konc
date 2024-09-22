@@ -1,5 +1,5 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
-kogeskostkoncept/.firebase/hosting.ZGlzdFxrb2dlc2tvc3Rrb25jZXB0.cache
+kog-kos-konc/.firebase/hosting.ZGlzdFxrb2dlc2tvc3Rrb25jZXB0.cache
 
 
 # ignore all source, and client sensitive files, for demo purpouses
@@ -36,7 +36,7 @@ speed-measure-plugin*.json
 *.sublime-workspace
 
 ## ignore this file, generated at build time
-projects/kogeskostkoncept/src/_gen_timestamp/build_time.json
+projects/kog-kos-konc/src/_gen_timestamp/build_time.json
 
 
 # IDE - VSCode
@@ -104,7 +104,7 @@ coverage
 *.wmv
 
 ## Your local environment file for any additional testing
-projects/kogeskostkoncept/src/environments/environment.local.ts
+projects/kog-kos-konc/src/environments/environment.local.ts
 
 # Optional npm cache directory
 .npm

@@ -1,4 +1,8 @@
-# Kogeskostkoncept
+# ATTENTION
+
+This is a top level overview of the project, without client source files
+
+# kog-kos-konc
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.1.8.
 

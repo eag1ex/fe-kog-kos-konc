@@ -5,5 +5,5 @@ e2e/**
 karma.conf.js
 commitlint.config.js
 src/assets/*
-projects/kogeskostkoncept/src/assets/*
+projects/kog-kos-konc/src/assets/*
 node_modules/*

@@ -41,7 +41,7 @@ echo '<< Execute BE project >>'
 
 ./node_modules/.bin/delay 1
 ## navigate to backend project
-cd ../koges-kost-koncept-backend
+cd ../fe-kog-kos-konc-backend
 
 ## this will start the backend script to initialize backend with database
 gnome-terminal -- bash -c 'bash start.database.sh'
